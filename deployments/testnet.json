@@ -1,0 +1,103 @@
+{
+  "network": "testnet",
+  "stablecoin": {
+    "symbol": "RLUSD",
+    "currency": "524C555344000000000000000000000000000000",
+    "issuer": "rQhWct2fv4Vc4KRjRgMrxa8xPN9Zx9iLKV",
+    "source": "https://tryrlusd.com/addresses"
+  },
+  "accounts": {
+    "treasury": "rhpWYS7RnKaRXG9Se4FDQE4eAMG9nZupEG",
+    "agent": "rUKKcAyaiAHtJ6ZRojVp3QxCvzaeQfZBw7",
+    "limits": "rB5K2LKR1iViKegynPSWfwfqq3MJgS3Yh5",
+    "operator": "r9F89UxKKEJ6DwKHP3WeN89QnVaEmVfPco"
+  },
+  "payees": {
+    "wanjiru": {
+      "id": "wanjiru",
+      "name": "Wanjiru Kamau",
+      "country": "KE",
+      "city": "Nairobi",
+      "address": "rDKpsoZx21ZsnF7GDP1RJ45sLs5PxRCk6r"
+    },
+    "okello": {
+      "id": "okello",
+      "name": "Okello Mugisha",
+      "country": "UG",
+      "city": "Kampala",
+      "address": "rKxjviCoQFybP7qkmfv2dCkXRgELQhtBVA"
+    },
+    "thandi": {
+      "id": "thandi",
+      "name": "Thandi Nkosi",
+      "country": "ZA",
+      "city": "Cape Town",
+      "address": "r3aejWzLbfN7FtAghG6nJzRfSb1MStpPun"
+    }
+  },
+  "txs": {
+    "treasuryTrustSet": "A79D8F50029E6B5BB5A612289040BB161DDF0F9BA3B8B8AFF15E91D92F7D1753",
+    "treasurySignerListSet": "E5D611CF5DA809632C37417CC04043361E1E5C2E3983A54B1BD3E70A5E0F3966",
+    "payee-wanjiruTrustSet": "676862AB8676C26C9C258B08C79EF8C13D3CDD435FB4297BD3DD368FB8D15516",
+    "payee-okelloTrustSet": "A72FC9BD5CA7B2FB3EFFF12DB1D5A4BA5591BA07DC42668E121B4D230B0E8617",
+    "payee-thandiTrustSet": "350135FB66D11DE49996522DA79FC52253672FDF55F9B4DDD1DC130B5B677AAF",
+    "treasuryTopup-2026-11-06T21:24:45.893Z": "C5670B31716F35B8B9C519003729550658DCF6FDB0377FC3701BE586CF342EDC",
+    "firstAgentPayment": "C73A841FD44F8CA19498CF61ED01A87C96D423E128B0AA2FA1E145CF30094677"
+  },
+  "probes": {
+    "rlusdPaymentChannel": {
+      "result": "temBAD_AMOUNT",
+      "note": "PaymentChannelCreate with an RLUSD Amount",
+      "at": "2026-11-06T21:31:43.249Z"
+    },
+    "rlusdTokenEscrow": {
+      "result": "tecNO_PERMISSION",
+      "hash": "46707A16FACC1F38D90D6E55CAB75376AA196DD1D3B0B4A1554DCE5D7C86CC52",
+      "note": "EscrowCreate of RLUSD; issuer has allowTrustLineLocking unset",
+      "at": "2026-11-06T21:31:43.249Z"
+    },
+    "controlTokenEscrow": {
+      "result": "tesSUCCESS",
+      "hash": "575B780A9469D49FD3AA470641B4D3817463FC8BABA368A3AA135DA795A4713C",
+      "note": "EscrowCreate of a probe token whose issuer rNgLo29escoRwCvbvHZrULnQoyjyYPSBJD set allowTrustLineLocking",
+      "at": "2026-11-06T21:31:43.249Z"
+    },
+    "controlXrpPaymentChannel": {
+      "result": "tesSUCCESS",
+      "hash": "18571C1696CDC1BAB59DE8AD130CCF6B8C01F582B550026EA1EAC75E96735D1E",
+      "note": "PaymentChannelCreate in XRP with the agent key as claim signer",
+      "at": "2026-11-06T21:31:43.249Z"
+    },
+    "agentAloneMultisig": {
+      "result": "tefBAD_QUORUM",
+      "note": "Treasury RLUSD payment carrying only the agent signature (weight 1 of quorum 2)",
+      "at": "2026-11-06T21:31:43.249Z"
+    },
+    "agentSingleSignAsTreasury": {
+      "result": "tefBAD_AUTH",
+      "note": "Treasury payment single-signed with the agent key",
+      "at": "2026-11-06T21:31:43.249Z"
+    }
+  },
+  "updatedAt": "2026-11-06T21:31:43.249Z",
+  "signerList": {
+    "quorum": 2,
+    "entries": [
+      {
+        "role": "agent",
+        "account": "rUKKcAyaiAHtJ6ZRojVp3QxCvzaeQfZBw7",
+        "weight": 1
+      },
+      {
+        "role": "limits",
+        "account": "rB5K2LKR1iViKegynPSWfwfqq3MJgS3Yh5",
+        "weight": 1
+      },
+      {
+        "role": "operator",
+        "account": "r9F89UxKKEJ6DwKHP3WeN89QnVaEmVfPco",
+        "weight": 2
+      }
+    ]
+  }
+}

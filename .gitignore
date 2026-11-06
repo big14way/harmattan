@@ -7,3 +7,5 @@ target/
 *.log
 .DS_Store
 neardev/
+.data/
+!.env.example
