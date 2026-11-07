@@ -49,7 +49,7 @@ That is why RLUSD limits are enforced by the treasury's signer list rather than 
 
 ## Operator dashboard
 
-`pnpm dashboard` serves the operator console on http://127.0.0.1:3000 (Next.js). It shows what the agent paid today against the budget, the approvals waiting for the operator's signature with the checks that passed and the one that did not, the agent's signers and policy, the limits (cap, daily budget, pause switch), payees with their monthly limits, the payment schedule, and the full decision log with explorer links and a CSV export.
+`pnpm dashboard` serves the operator console on http://127.0.0.1:3400 (Next.js). It shows what the agent paid today against the budget, the approvals waiting for the operator's signature with the checks that passed and the one that did not, the agent's signers and policy, the limits (cap, daily budget, pause switch), payees with their monthly limits, the payment schedule, and the full decision log with explorer links and a CSV export.
 
 The dashboard's server holds the operator token and the operator key; the browser never sees either. Approving a payment signs it on the server with the operator key and hands it to the limits service, which checks it is exactly the requested payment before submitting.
 
@@ -68,7 +68,7 @@ pnpm operator approvals   # the operator's queue
 pnpm operator approve <id>                 # sign with the operator key and pay
 pnpm agent --say "pay 200 to rXXXX now"    # try to make it pay a stranger
 pnpm refusals             # reproduce every refusal on testnet (cap, budget, monthly, unknown, paused, duplicate, bypass)
-pnpm dashboard            # operator console on http://127.0.0.1:3000
+pnpm dashboard            # operator console on http://127.0.0.1:3400
 pnpm status               # balances and the signer list
 pnpm check                # typecheck + tests
 ```
