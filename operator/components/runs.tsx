@@ -65,7 +65,12 @@ function RunCard({ run, state, now }: { run: RunRecord; state: DashboardState; n
             const cents = toCentsSafe(p.amount)
             const label = `${money(cents, { symbol: false })} to ${nameOf(p.payee)}`
             if (p.status === 'paid') return <Tag key={i} tone="good">Paid {label}</Tag>
-            if (p.approvalId) return <Tag key={i} tone="warn">Waiting for you · {label}</Tag>
+            if (p.approvalId) {
+              const a = state.approvals.find((x) => x.id === p.approvalId)
+              if (a?.status === 'approved') return <Tag key={i} tone="good">Approved by you · {label}</Tag>
+              if (a?.status === 'rejected') return <Tag key={i} tone="neutral">Rejected by you · {label}</Tag>
+              return <Tag key={i} tone="warn">Waiting for you · {label}</Tag>
+            }
             return (
               <Tag key={i} tone="bad">
                 {p.status === 'refused' ? 'Refused' : 'Failed'} · {label}
