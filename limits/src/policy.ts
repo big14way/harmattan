@@ -47,15 +47,15 @@ export function defaultPolicy(): Policy {
       address: p.address,
       country: p.country,
       city: p.city,
-      monthlyLimitCents: toCents('300'),
+      monthlyLimitCents: toCents('30'),
       active: true,
     }
   }
   return {
     version: 1,
     paused: false,
-    perPaymentCapCents: toCents('150'),
-    dailyBudgetCents: toCents('500'),
+    perPaymentCapCents: toCents('15'),
+    dailyBudgetCents: toCents('50'),
     timezone: 'Africa/Lagos',
     payees,
     updatedAt: new Date().toISOString(),

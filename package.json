@@ -19,7 +19,9 @@
     "agent": "tsx agent/src/run.ts",
     "topup": "tsx scripts/treasury-topup.ts",
     "limits": "tsx limits/src/server.ts",
-    "seed": "tsx scripts/seed-payables.ts"
+    "seed": "tsx scripts/seed-payables.ts",
+    "operator": "tsx scripts/operator.ts",
+    "refusals": "tsx scripts/refusals.ts"
   },
   "devDependencies": {
     "@types/node": "^26.6.6",

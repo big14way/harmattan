@@ -65,6 +65,8 @@ export function summarize(records: DecisionRecord[], now: Date, timezone: string
   for (const r of records) {
     if (!counts(r)) continue
     paidPaymentIds.add(r.paymentId)
+    // Payments an operator signed are logged, but the limits bound what the agent moves on its own.
+    if (r.approvedBy !== 'limits') continue
     if (r.day === day) spentTodayCents += r.cents
     if (r.month === month && r.payeeId) {
       spentThisMonthByPayee[r.payeeId] = (spentThisMonthByPayee[r.payeeId] ?? 0) + r.cents

@@ -59,37 +59,58 @@ function refuse(code: DecisionCode, reason: string, payeeId: string | null, cent
   return { ok: false, code, reason, payeeId, cents, needsApproval }
 }
 
+export interface ShapeContext {
+  treasury: string
+  asset: IssuedAsset
+  paymentId: string
+  /** Fee ceiling in drops; stops a compromised signer from burning treasury XRP on fees. */
+  maxFeeDrops?: number
+}
+
+export type ShapeResult = { ok: true; cents: number } | { ok: false; reason: string; cents: number }
+
+/**
+ * Structural checks every treasury payment must pass before anyone co-signs it: a plain RLUSD
+ * Payment from the treasury, no cross-currency paths or flags, bounded fee and lifetime, and an
+ * InvoiceID that binds it to one Harmattan payment id.
+ */
+export function checkPaymentShape(tx: PaymentFields, ctx: ShapeContext): ShapeResult {
+  const maxFee = ctx.maxFeeDrops ?? 5_000
+  const bad = (reason: string, cents = 0): ShapeResult => ({ ok: false, reason, cents })
+  if (tx.TransactionType !== 'Payment') return bad('Only Payment transactions are co-signed')
+  if (tx.Account !== ctx.treasury) return bad('Payment must come from the Harmattan treasury')
+  if (tx.SendMax !== undefined || tx.DeliverMin !== undefined || tx.Paths !== undefined) {
+    return bad('Cross-currency fields (SendMax, DeliverMin, Paths) are not allowed')
+  }
+  if (tx.Flags !== undefined && tx.Flags !== 0) return bad('Payment flags are not allowed')
+  if (typeof tx.LastLedgerSequence !== 'number') return bad('LastLedgerSequence is required')
+  if (typeof tx.Fee !== 'string' || Number(tx.Fee) > maxFee) return bad(`Fee above ${maxFee} drops`)
+
+  const amount = tx.Amount as { currency?: string; issuer?: string; value?: string } | string | undefined
+  if (!amount || typeof amount === 'string' || amount.currency !== ctx.asset.currency || amount.issuer !== ctx.asset.issuer) {
+    return bad(`Amount must be ${ctx.asset.symbol} from issuer ${ctx.asset.issuer}`)
+  }
+  let cents: number
+  try {
+    cents = toCents(amount.value ?? '')
+  } catch {
+    return bad(`Amount ${amount.value} is not a 2-decimal value`)
+  }
+  if (cents <= 0) return bad('Amount must be positive')
+  if (tx.InvoiceID !== invoiceIdFor(ctx.paymentId)) return bad('InvoiceID does not match the payment id', cents)
+  return { ok: true, cents }
+}
+
 /**
  * Pure policy check for one agent-signed treasury payment. No I/O: everything it needs is passed
  * in, so the same function is what the service runs and what the tests exercise.
  */
 export function evaluatePayment(input: EvaluateInput): Decision {
   const { policy, spend, tx, paymentId, treasury, asset } = input
-  const maxFee = input.maxFeeDrops ?? 5_000
 
-  if (tx.TransactionType !== 'Payment') return refuse('BAD_TX', 'Only Payment transactions are co-signed', null, 0)
-  if (tx.Account !== treasury) return refuse('BAD_TX', 'Payment must come from the Harmattan treasury', null, 0)
-  if (tx.SendMax !== undefined || tx.DeliverMin !== undefined || tx.Paths !== undefined) {
-    return refuse('BAD_TX', 'Cross-currency fields (SendMax, DeliverMin, Paths) are not allowed', null, 0)
-  }
-  if (tx.Flags !== undefined && tx.Flags !== 0) return refuse('BAD_TX', 'Payment flags are not allowed', null, 0)
-  if (typeof tx.LastLedgerSequence !== 'number') return refuse('BAD_TX', 'LastLedgerSequence is required', null, 0)
-  if (typeof tx.Fee !== 'string' || Number(tx.Fee) > maxFee) return refuse('BAD_TX', `Fee above ${maxFee} drops`, null, 0)
-
-  const amount = tx.Amount as { currency?: string; issuer?: string; value?: string } | string | undefined
-  if (!amount || typeof amount === 'string' || amount.currency !== asset.currency || amount.issuer !== asset.issuer) {
-    return refuse('BAD_TX', `Amount must be ${asset.symbol} from issuer ${asset.issuer}`, null, 0)
-  }
-  let cents: number
-  try {
-    cents = toCents(amount.value ?? '')
-  } catch {
-    return refuse('BAD_TX', `Amount ${amount.value} is not a 2-decimal value`, null, 0)
-  }
-  if (cents <= 0) return refuse('BAD_TX', 'Amount must be positive', null, 0)
-  if (tx.InvoiceID !== invoiceIdFor(paymentId)) {
-    return refuse('BAD_TX', 'InvoiceID does not match the payment id', null, cents)
-  }
+  const shape = checkPaymentShape(tx, { treasury, asset, paymentId, maxFeeDrops: input.maxFeeDrops })
+  if (!shape.ok) return refuse('BAD_TX', shape.reason, null, shape.cents)
+  const cents = shape.cents
   if (!input.agentSignatureValid) {
     return refuse('BAD_SIGNATURE', 'Request must carry exactly one valid signature, from the agent key', null, cents)
   }

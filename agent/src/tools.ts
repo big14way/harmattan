@@ -34,6 +34,8 @@ export interface PayResult {
   code?: string
   reason: string
   needsApproval?: boolean
+  /** Approval request the operator sees in the dashboard, when the payment needs a human. */
+  approvalId?: string
   txHash?: string
   explorerUrl?: string
 }
@@ -87,7 +89,16 @@ export function createAgentTools(limits = new LimitsClient()) {
     return result
   }
 
-  async function payPayee(input: PayInput): Promise<PayResult> {
+  // Payments go out one at a time: each one is built on the treasury's next sequence number, so two
+  // built in parallel would collide on the ledger (tefPAST_SEQ) even though both were allowed.
+  let inFlight: Promise<unknown> = Promise.resolve()
+  function payPayee(input: PayInput): Promise<PayResult> {
+    const run = inFlight.then(() => payOne(input), () => payOne(input))
+    inFlight = run.catch(() => undefined)
+    return run
+  }
+
+  async function payOne(input: PayInput): Promise<PayResult> {
     const paymentId = input.paymentId ?? `adhoc-${Date.now().toString(36)}`
     const base = { paymentId, payee: input.payee, amount: input.amount }
     let cents: number
@@ -116,15 +127,18 @@ export function createAgentTools(limits = new LimitsClient()) {
       code: res.code,
       reason: res.reason,
       needsApproval: res.needsApproval,
+      approvalId: res.approvalId,
       txHash: res.tx?.hash,
       explorerUrl: res.tx?.explorerUrl,
     }
-    if (input.paymentId) {
-      updatePayable(input.paymentId, {
+    // Never downgrade a schedule entry that is already paid (e.g. a refused duplicate attempt).
+    const current = input.paymentId ? loadPayables().find((p) => p.id === input.paymentId) : undefined
+    if (current && current.status !== 'paid') {
+      updatePayable(current.id, {
         status: res.status === 'paid' ? 'paid' : res.needsApproval ? 'awaiting_approval' : res.status === 'refused' ? 'refused' : 'failed',
         txHash: res.tx?.hash,
         explorerUrl: res.tx?.explorerUrl,
-        note: res.reason,
+        note: res.approvalId ? `${res.reason} (approval ${res.approvalId})` : res.reason,
       })
     }
     log({ tool: 'pay_payee', ...result })

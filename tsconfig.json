@@ -1,4 +1,4 @@
 {
   "extends": "./tsconfig.base.json",
-  "include": ["ledger/src", "agent/src", "limits/src", "scripts", "tests", "vitest.config.ts"]
+  "include": ["ledger/src", "agent/src", "limits/src", "operator/lib", "scripts", "tests", "vitest.config.ts"]
 }

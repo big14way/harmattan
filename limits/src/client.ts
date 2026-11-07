@@ -7,12 +7,15 @@ export interface CosignResponse {
   code: DecisionCode
   reason: string
   needsApproval?: boolean
+  /** Set when the refusal was queued for the operator to approve. */
+  approvalId?: string
   tx?: TxOutcome
 }
 
 export interface PolicyView {
   policy: Policy
   treasury: string
+  signers: { agent: string; limits: string; operator: string }
   today: { day: string; month: string; spentCents: number; remainingCents: number }
   spentThisMonthByPayee: Record<string, number>
 }

@@ -2,6 +2,7 @@
  * Operator-side: puts payments on the agent's schedule, due today (operator time zone).
  *
  *   pnpm seed p0      one small payment to Wanjiru (first autonomous payment)
+ *   pnpm seed demo    the demo run: two payments inside the limits, one above the 15 RLUSD cap
  */
 import 'dotenv/config'
 import { toCents } from '../ledger/src/index.ts'
@@ -11,6 +12,11 @@ import { upsertPayable, type Payable } from '../agent/src/payables.ts'
 
 const SCENARIOS: Record<string, Array<Pick<Payable, 'payeeId' | 'description'> & { amount: string; key: string }>> = {
   p0: [{ key: 'wanjiru-oct-illustrations', payeeId: 'wanjiru', amount: '2.50', description: 'Brand illustrations, October milestone' }],
+  demo: [
+    { key: 'wanjiru-nov-illustrations', payeeId: 'wanjiru', amount: '12.00', description: 'Campaign illustrations, November milestone 1' },
+    { key: 'okello-api-sprint', payeeId: 'okello', amount: '9.50', description: 'Payments API sprint, week 45' },
+    { key: 'thandi-launch-video', payeeId: 'thandi', amount: '40.00', description: 'Launch video edit and colour grade' },
+  ],
 }
 
 const name = process.argv[2] ?? 'p0'

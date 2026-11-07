@@ -1,4 +1,5 @@
 import { chmodSync, existsSync, readFileSync, writeFileSync } from 'node:fs'
+import { randomBytes } from 'node:crypto'
 import path from 'node:path'
 import { Wallet } from 'xrpl'
 import { dataDir } from './paths.ts'
@@ -54,4 +55,16 @@ export function saveWallet(role: Role, wallet: Wallet): void {
   const file = keyFile(role)
   writeFileSync(file, JSON.stringify(stored, null, 2) + '\n', { mode: 0o600 })
   chmodSync(file, 0o600)
+}
+
+/**
+ * Bearer token for the limits service's operator-only routes (policy, approvals). From
+ * HARMATTAN_OPERATOR_TOKEN in deployment, else generated once into the git-ignored key folder,
+ * where the limits service and the operator's tools on the same machine both read it.
+ */
+export function operatorToken(): string {
+  if (process.env.HARMATTAN_OPERATOR_TOKEN) return process.env.HARMATTAN_OPERATOR_TOKEN
+  const file = path.join(dataDir('keys'), 'operator-token')
+  if (!existsSync(file)) writeFileSync(file, randomBytes(24).toString('hex') + '\n', { mode: 0o600 })
+  return readFileSync(file, 'utf8').trim()
 }

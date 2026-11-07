@@ -143,4 +143,15 @@ describe('summarize', () => {
     expect(s.spentThisMonthByPayee.wanjiru).toBe(2000)
     expect([...s.paidPaymentIds].sort()).toEqual(['a', 'b'])
   })
+
+  it('keeps operator-signed payments out of the agent budget but still blocks paying them twice', () => {
+    const s = summarize(
+      [rec({ paymentId: 'big', cents: 4000, approvedBy: 'operator', code: 'APPROVED_BY_OPERATOR' })],
+      new Date('2026-11-06T12:00:00Z'),
+      'Africa/Lagos',
+    )
+    expect(s.spentTodayCents).toBe(0)
+    expect(s.spentThisMonthByPayee.wanjiru).toBeUndefined()
+    expect(s.paidPaymentIds.has('big')).toBe(true)
+  })
 })
