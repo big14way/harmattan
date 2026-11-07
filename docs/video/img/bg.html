@@ -1,0 +1,14 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+html,body{margin:0;width:1920px;height:1080px;background:#121110;overflow:hidden}
+.glow{position:absolute;border-radius:50%;filter:blur(140px)}
+.g1{width:1000px;height:1000px;left:-260px;top:-380px;background:rgba(233,162,59,.20)}
+.g2{width:900px;height:900px;right:-300px;bottom:-420px;background:rgba(233,162,59,.10)}
+.grid{position:absolute;inset:0;background-image:linear-gradient(to right,rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.035) 1px,transparent 1px);background-size:72px 72px;-webkit-mask-image:radial-gradient(ellipse 75% 65% at 50% 45%,#000 25%,transparent 80%)}
+.sun{position:absolute;right:250px;top:250px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle at 50% 45%,#f2b552,#e9a23b 60%,#c9831f);opacity:.92}
+.haze{position:absolute;right:240px;width:440px;height:22px;background:#121110}
+.h1{top:520px}.h2{top:582px}.h3{top:640px;height:40px}
+.dust{position:absolute;right:140px;top:700px;width:640px;height:2px;background:linear-gradient(90deg,transparent,rgba(233,162,59,.5),transparent)}
+</style></head><body>
+<div class="glow g1"></div><div class="glow g2"></div><div class="grid"></div>
+<div class="sun"></div><div class="haze h1"></div><div class="haze h2"></div><div class="haze h3"></div><div class="dust"></div>
+</body></html>

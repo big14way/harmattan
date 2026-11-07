@@ -1,0 +1,623 @@
+{
+ "base": "http://127.0.0.1:3400",
+ "viewport": [
+  1440,
+  810
+ ],
+ "window": [
+  1440,
+  900
+ ],
+ "video": [
+  1920,
+  1080
+ ],
+ "out": "clips",
+ "accent": "#e9a23b",
+ "scenes": [
+  {
+   "name": "overview",
+   "steps": [
+    [
+     "goto",
+     "/",
+     "h1"
+    ],
+    [
+     "waitFor",
+     "text=Paid by the agent today",
+     20000
+    ],
+    [
+     "wait",
+     2500
+    ],
+    [
+     "moveTo",
+     "text=Paid by the agent today",
+     900,
+     0,
+     40
+    ],
+    [
+     "zoom",
+     "text=Paid by the agent today",
+     1.3,
+     900,
+     3200
+    ],
+    [
+     "unzoom",
+     800
+    ],
+    [
+     "wait",
+     400
+    ],
+    [
+     "scrollTo",
+     "#limits",
+     90,
+     1500
+    ],
+    [
+     "wait",
+     900
+    ],
+    [
+     "moveTo",
+     "text=Per-payment cap",
+     800,
+     0,
+     50
+    ],
+    [
+     "zoom",
+     "text=Daily budget",
+     1.25,
+     900,
+     3600
+    ],
+    [
+     "unzoom",
+     800
+    ],
+    [
+     "scrollTo",
+     "#payees",
+     90,
+     1400
+    ],
+    [
+     "wait",
+     1200
+    ],
+    [
+     "moveTo",
+     "text=Change limit",
+     800,
+     0,
+     -20
+    ],
+    [
+     "wait",
+     2600
+    ]
+   ]
+  },
+  {
+   "name": "run",
+   "steps": [
+    [
+     "goto",
+     "/",
+     "h1"
+    ],
+    [
+     "waitFor",
+     "text=Paid by the agent today",
+     20000
+    ],
+    [
+     "wait",
+     1800
+    ],
+    [
+     "moveTo",
+     "button:has-text(\"Run today\")",
+     900
+    ],
+    [
+     "wait",
+     300
+    ],
+    [
+     "click"
+    ],
+    [
+     "wait",
+     900
+    ],
+    [
+     "scrollTo",
+     "#runs",
+     90,
+     1300
+    ],
+    [
+     "waitUntil",
+     "document.body.innerText.includes('Agent run finished')",
+     120000
+    ],
+    [
+     "wait",
+     1600
+    ],
+    [
+     "moveTo",
+     "text=Run the scheduled payout for today",
+     800,
+     0,
+     40
+    ],
+    [
+     "zoom",
+     "text=Run the scheduled payout for today",
+     1.4,
+     900,
+     4200
+    ],
+    [
+     "unzoom",
+     800
+    ],
+    [
+     "wait",
+     600
+    ],
+    [
+     "saveVar",
+     "wanjiruTx",
+     "fetch('/api/state').then(r => r.json()).then(s => s.decisions.find(d => d.payeeId === 'wanjiru' && d.outcome === 'cosigned').txHash)"
+    ]
+   ]
+  },
+  {
+   "name": "approve",
+   "steps": [
+    [
+     "goto",
+     "/",
+     "h1"
+    ],
+    [
+     "waitFor",
+     "button:has-text(\"Approve and pay\")",
+     20000
+    ],
+    [
+     "wait",
+     1200
+    ],
+    [
+     "scrollTo",
+     "#approvals",
+     90,
+     1300
+    ],
+    [
+     "wait",
+     900
+    ],
+    [
+     "moveTo",
+     "text=Checks",
+     800,
+     0,
+     60
+    ],
+    [
+     "zoom",
+     "text=Checks",
+     1.3,
+     900,
+     3800
+    ],
+    [
+     "unzoom",
+     800
+    ],
+    [
+     "wait",
+     300
+    ],
+    [
+     "moveTo",
+     "button:has-text(\"Approve and pay\")",
+     900
+    ],
+    [
+     "wait",
+     400
+    ],
+    [
+     "click"
+    ],
+    [
+     "waitUntil",
+     "document.body.innerText.includes('validated on the ledger')",
+     90000
+    ],
+    [
+     "wait",
+     2800
+    ],
+    [
+     "saveVar",
+     "approveTx",
+     "document.querySelector('[role=status] a') && document.querySelector('[role=status] a').href"
+    ]
+   ]
+  },
+  {
+   "name": "explorer",
+   "steps": [
+    [
+     "goto",
+     "https://testnet.xrpl.org/transactions/{{wanjiruTx}}/detailed"
+    ],
+    [
+     "wait",
+     8000
+    ],
+    [
+     "clickIfPresent",
+     "button[aria-label=\"Close this consent banner\"]",
+     1200
+    ],
+    [
+     "moveTo",
+     "text=It was instructed to deliver",
+     800,
+     0,
+     0
+    ],
+    [
+     "wait",
+     1200
+    ],
+    [
+     "scrollTo",
+     "text=Signers",
+     160,
+     1500
+    ],
+    [
+     "wait",
+     600
+    ],
+    [
+     "moveTo",
+     "text=Signers",
+     800,
+     40,
+     10
+    ],
+    [
+     "zoom",
+     "text=Signers",
+     1.45,
+     900,
+     5200
+    ],
+    [
+     "unzoom",
+     800
+    ],
+    [
+     "wait",
+     800
+    ]
+   ]
+  },
+  {
+   "name": "inject",
+   "steps": [
+    [
+     "goto",
+     "/",
+     "h1"
+    ],
+    [
+     "waitFor",
+     "text=Paid by the agent today",
+     20000
+    ],
+    [
+     "wait",
+     800
+    ],
+    [
+     "scrollTo",
+     "#runs",
+     90,
+     1300
+    ],
+    [
+     "wait",
+     900
+    ],
+    [
+     "moveTo",
+     "button:has-text(\"Pay a new address\")",
+     900
+    ],
+    [
+     "click"
+    ],
+    [
+     "wait",
+     1400
+    ],
+    [
+     "moveTo",
+     "button:has-text(\"Send to the agent\")",
+     900
+    ],
+    [
+     "wait",
+     300
+    ],
+    [
+     "click"
+    ],
+    [
+     "waitUntil",
+     "document.body.innerText.includes('Agent run finished')",
+     120000
+    ],
+    [
+     "wait",
+     1200
+    ],
+    [
+     "moveTo",
+     "text=Refused \u00b7",
+     800,
+     0,
+     30
+    ],
+    [
+     "zoom",
+     "text=Refused \u00b7",
+     1.45,
+     900,
+     4200
+    ],
+    [
+     "unzoom",
+     800
+    ],
+    [
+     "scrollTo",
+     "#ledger",
+     90,
+     1500
+    ],
+    [
+     "wait",
+     800
+    ],
+    [
+     "moveTo",
+     "section:has(#ledger) li > button",
+     800
+    ],
+    [
+     "click"
+    ],
+    [
+     "wait",
+     1200
+    ],
+    [
+     "zoom",
+     "text=Never reached the ledger",
+     1.35,
+     900,
+     4200
+    ],
+    [
+     "unzoom",
+     800
+    ],
+    [
+     "wait",
+     500
+    ]
+   ]
+  },
+  {
+   "name": "payee",
+   "steps": [
+    [
+     "goto",
+     "/p/wanjiru",
+     "text=In your wallet"
+    ],
+    [
+     "wait",
+     2500
+    ],
+    [
+     "moveTo",
+     "text=In your wallet",
+     800,
+     0,
+     60
+    ],
+    [
+     "zoom",
+     "text=In your wallet",
+     1.3,
+     900,
+     3600
+    ],
+    [
+     "unzoom",
+     800
+    ],
+    [
+     "moveTo",
+     "text=Campaign illustrations",
+     800
+    ],
+    [
+     "zoom",
+     "text=Campaign illustrations",
+     1.35,
+     900,
+     3400
+    ],
+    [
+     "unzoom",
+     800
+    ],
+    [
+     "wait",
+     600
+    ]
+   ]
+  },
+  {
+   "name": "invite",
+   "steps": [
+    [
+     "goto",
+     "/",
+     "h1"
+    ],
+    [
+     "waitFor",
+     "text=Paid by the agent today",
+     20000
+    ],
+    [
+     "wait",
+     600
+    ],
+    [
+     "scrollTo",
+     "button:has-text(\"Invite a payee\")",
+     300,
+     1400
+    ],
+    [
+     "wait",
+     500
+    ],
+    [
+     "moveTo",
+     "button:has-text(\"Invite a payee\")",
+     800
+    ],
+    [
+     "click"
+    ],
+    [
+     "wait",
+     900
+    ],
+    [
+     "moveTo",
+     "label:has-text(\"Name\") input",
+     700
+    ],
+    [
+     "click"
+    ],
+    [
+     "type",
+     "Amina Njeri",
+     45
+    ],
+    [
+     "moveTo",
+     "label:has-text(\"City\") input",
+     700
+    ],
+    [
+     "click"
+    ],
+    [
+     "type",
+     "Mombasa",
+     45
+    ],
+    [
+     "wait",
+     400
+    ],
+    [
+     "moveTo",
+     "button:has-text(\"Create invite link\")",
+     800
+    ],
+    [
+     "click"
+    ],
+    [
+     "wait",
+     1800
+    ],
+    [
+     "saveVar",
+     "inviteLink",
+     "[...document.querySelectorAll('p.font-mono')].map(p => p.textContent).find(t => t.includes('/join/'))"
+    ],
+    [
+     "goto",
+     "{{inviteLink}}",
+     "button:has-text(\"Create my wallet\")"
+    ],
+    [
+     "wait",
+     1500
+    ],
+    [
+     "eval",
+     "const s = document.createElement('style'); s.textContent = '.bg-warn-bg code { filter: blur(9px) }'; document.head.appendChild(s)"
+    ],
+    [
+     "moveTo",
+     "button:has-text(\"Create my wallet\")",
+     900
+    ],
+    [
+     "click"
+    ],
+    [
+     "waitUntil",
+     "document.body.innerText.includes('set up, Amina')",
+     90000
+    ],
+    [
+     "wait",
+     3200
+    ]
+   ]
+  },
+  {
+   "name": "term_refusals",
+   "viewport": [
+    1920,
+    1080
+   ],
+   "terminal": {
+    "title": "pnpm refusals \u00b7 every limit, live on XRPL testnet",
+    "schedule": "schedules/refusals.json",
+    "end": 14
+   }
+  }
+ ]
+}

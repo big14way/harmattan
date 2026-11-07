@@ -13,3 +13,8 @@ neardev/
 # Next.js generated
 operator/next-env.d.ts
 *.tsbuildinfo
+
+# Demo video build outputs
+docs/video/clips/
+docs/video/out/
+docs/video/.build/

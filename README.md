@@ -147,7 +147,7 @@ receipts/  WhatsApp receipts (Twilio sandbox) with a zero-credential outbox
 operator/  the operator dashboard (Next.js) and console: policy changes, approvals signed with the operator key
 scripts/   testnet setup, treasury top-up, ledger probes, operator CLI, refusal run, demo reset, status, process supervisor
 tests/     policy, approval, signature, onboarding, receipt and money tests
-docs/      architecture diagram (SVG + PNG) and dashboard screenshot
+docs/      architecture diagram (SVG + PNG), dashboard screenshot, demo video config and narration (docs/video)
 ```
 
 ## Status

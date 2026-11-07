@@ -1,0 +1,44 @@
+[
+ {
+  "t": 0.5,
+  "html": "<span class=\"p\">➜</span> <span class=\"dim\">~/harmattan</span> pnpm refusals",
+  "type": true,
+  "cps": 45
+ },
+ {
+  "t": 1.6888888888888889,
+  "html": "policy: cap 15.00 RLUSD, daily budget 50.00 RLUSD, spent today 21.50 RLUSD"
+ },
+ {
+  "t": 2.7888888888888888,
+  "html": "<span class=\"ok\">PASS</span>  above per-payment cap              <span class=\"kw\">OVER_CAP            </span>40.00 RLUSD is above the per-payment cap of 15.00 RLUSD; an…"
+ },
+ {
+  "t": 3.888888888888889,
+  "html": "<span class=\"ok\">PASS</span>  unknown payee                      <span class=\"kw\">UNKNOWN_PAYEE       </span>Destination rKcC3pgkwiuuuEQRP2rHdZUq3wQGqza1TH is not an approved…"
+ },
+ {
+  "t": 4.988888888888889,
+  "html": "<span class=\"ok\">PASS</span>  over daily budget                  <span class=\"kw\">OVER_DAILY_BUDGET   </span>Only 1.00 RLUSD left of today's 22.50 RLUSD budget"
+ },
+ {
+  "t": 6.088888888888889,
+  "html": "<span class=\"ok\">PASS</span>  over payee monthly limit           <span class=\"kw\">OVER_PAYEE_MONTHLY  </span>Thandi Nkosi has 1.00 RLUSD left of a 1.00 RLUSD monthly limit"
+ },
+ {
+  "t": 7.188888888888888,
+  "html": "<span class=\"ok\">PASS</span>  paused by operator                 <span class=\"kw\">PAUSED              </span>The operator has paused all agent payments"
+ },
+ {
+  "t": 8.288888888888888,
+  "html": "<span class=\"ok\">PASS</span>  duplicate payment id               <span class=\"kw\">DUPLICATE           </span>Payment thandi-launch-video-2026-11-07-9ijcq was already made"
+ },
+ {
+  "t": 9.388888888888888,
+  "html": "<span class=\"ok\">PASS</span>  agent bypasses the limits service  <span class=\"kw\">tefBAD_QUORUM       </span>submitted straight to XRPL with only the agent signature (weight…"
+ },
+ {
+  "t": 10.488888888888887,
+  "html": "<span class=\"ok\">7/7 refusals reproduced; policy restored; 3 test approval request(s) rejected</span>"
+ }
+]

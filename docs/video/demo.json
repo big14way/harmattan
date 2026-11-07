@@ -1,0 +1,467 @@
+{
+ "clips_dir": "clips",
+ "work_dir": ".build",
+ "output": "out/harmattan-demo.mp4",
+ "voice": "en-US-AndrewMultilingualNeural",
+ "voice_rate": "+20%",
+ "crossfade": 0.6,
+ "sfx_gain": 0.6,
+ "brand": {
+  "name": "Harmattan",
+  "domain": "github.com/big14way/harmattan",
+  "paper": "#121110",
+  "paper_deep": "#1a1917",
+  "ink": "#f3f1ed",
+  "ink_soft": "#b9b5ae",
+  "ink_faint": "#6f6d68",
+  "accent": "#e9a23b",
+  "accent_soft": "#f5d49a",
+  "card": "#2a1f0e"
+ },
+ "scenes": [
+  {
+   "id": "t0",
+   "kind": "title",
+   "image": "img/bg.jpg",
+   "tagline": "The treasury agent your CFO would sign off on.",
+   "tag": "Agentic Finance \u00b7 RLUSD on the XRP Ledger \u00b7 live on testnet",
+   "vo": "Harmattan is an AI agent that pays a business's contractors in RLUSD on the XRP Ledger. It can only move money inside limits it does not control."
+  },
+  {
+   "id": "p1",
+   "kind": "slide",
+   "image": "img/payees.jpg",
+   "label": "The problem",
+   "head": "A Lagos agency pays contractors in Nairobi, Kampala and Cape Town.",
+   "bullets": [
+    {
+     "k": "Today",
+     "v": "Three bank portals and most of a week, every month."
+    },
+    {
+     "k": "An agent could do it",
+     "v": "On schedule, in seconds, in a dollar stablecoin."
+    },
+    {
+     "k": "But",
+     "v": "No CFO hands an agent the treasury unless the limits hold when it is wrong."
+    }
+   ],
+   "vo": "A Lagos agency pays a designer in Nairobi, a developer in Kampala and an editor in Cape Town. Today that takes three bank portals and most of a week. An agent could do it in seconds, but no CFO hands it the treasury unless the limits hold when it is wrong."
+  },
+  {
+   "id": "p2",
+   "kind": "slide",
+   "label": "What changes",
+   "head": "Every payment needs two signatures. The agent holds one.",
+   "bullets": [
+    {
+     "k": "Agent",
+     "v": "Signs every payment with its own key: weight one of the two needed."
+    },
+    {
+     "k": "Limits service",
+     "v": "Adds the second signature only inside the operator's policy."
+    },
+    {
+     "k": "Operator",
+     "v": "Above any limit, only the operator's key can complete a payment."
+    }
+   ],
+   "diagram": {
+    "boxes": [
+     {
+      "id": "agent",
+      "box": [
+       36,
+       36,
+       300,
+       136
+      ],
+      "title": "AI agent",
+      "sub": "signs, weight 1"
+     },
+     {
+      "id": "limits",
+      "box": [
+       410,
+       36,
+       674,
+       136
+      ],
+      "title": "Limits service",
+      "sub": "co-signs, weight 1"
+     },
+     {
+      "id": "treasury",
+      "box": [
+       36,
+       300,
+       330,
+       410
+      ],
+      "title": "Treasury on XRPL",
+      "sub": "quorum 2, holds RLUSD",
+      "accent": true
+     },
+     {
+      "id": "operator",
+      "box": [
+       410,
+       300,
+       674,
+       410
+      ],
+      "title": "Operator",
+      "sub": "above limits, weight 2"
+     },
+     {
+      "id": "payee",
+      "box": [
+       36,
+       560,
+       330,
+       660
+      ],
+      "title": "Contractor wallet",
+      "sub": "Nairobi, Kampala, Cape Town"
+     }
+    ],
+    "arrows": [
+     {
+      "from": "agent",
+      "from_side": "right",
+      "to": "limits",
+      "to_side": "left",
+      "label": "co-sign?",
+      "label_at": [
+       355,
+       70
+      ],
+      "anchor": "mm"
+     },
+     {
+      "from": [
+       542,
+       136
+      ],
+      "to": [
+       250,
+       300
+      ],
+      "label": "inside policy: signs",
+      "label_at": [
+       418,
+       224
+      ],
+      "anchor": "lm"
+     },
+     {
+      "from": "operator",
+      "from_side": "left",
+      "to": "treasury",
+      "to_side": "right",
+      "soft": true
+     },
+     {
+      "from": "treasury",
+      "from_side": "bottom",
+      "to": "payee",
+      "to_side": "top",
+      "label": "RLUSD in seconds",
+      "label_at": [
+       199,
+       485
+      ],
+      "anchor": "lm"
+     }
+    ],
+    "note": "The agent alone is rejected by the ledger itself."
+   },
+   "vo": "So every treasury payment needs two signatures on the XRP Ledger, and the agent holds one. The second comes from an independent limits service, only inside the operator's policy. Above a limit, only the operator's own key can sign."
+  },
+  {
+   "id": "s1",
+   "kind": "laptop",
+   "layout": "wide",
+   "src": "overview.webm",
+   "cut": [
+    2.5,
+    33.5
+   ],
+   "crop": [
+    1920,
+    1080,
+    0,
+    0
+   ],
+   "max_speed": 2.4,
+   "step": "01",
+   "head": "The operator sets the limits",
+   "sub": "15 RLUSD per payment, 50 a day, 30 per contractor per month. The agent can read them, never change them.",
+   "vo": "This is the operator's console. A fifteen dollar cap per payment, a fifty dollar daily budget, and a monthly limit for each contractor. The agent can read these limits. It cannot change them.",
+   "device_h": 712
+  },
+  {
+   "id": "s2",
+   "kind": "laptop",
+   "layout": "wide",
+   "src": "run.webm",
+   "cut": [
+    [
+     2.2,
+     10.0
+    ],
+    [
+     23.0,
+     34.5
+    ]
+   ],
+   "crop": [
+    1920,
+    1080,
+    0,
+    0
+   ],
+   "max_speed": 1.7,
+   "step": "02",
+   "head": "The agent pays what is due",
+   "sub": "Claude Haiku signs each payment with the agent key; the limits service co-signs and submits it.",
+   "vo": "Three payments are due. The agent, on Claude Haiku, signs each with its own key and asks the limits service to co-sign. Twelve dollars to Nairobi and nine fifty to Kampala clear in seconds. Forty to Cape Town is over the cap, so it waits.",
+   "device_h": 712
+  },
+  {
+   "id": "s3",
+   "kind": "laptop",
+   "layout": "wide",
+   "src": "explorer.webm",
+   "cut": [
+    8.5,
+    28.5
+   ],
+   "crop": [
+    1920,
+    1080,
+    0,
+    0
+   ],
+   "max_speed": 2.0,
+   "step": "03",
+   "head": "Two signatures, on the ledger",
+   "sub": "The agent's and the limits service's, against a treasury that needs both. Fee: 0.000036 XRP.",
+   "vo": "On the ledger, that payment carries two signatures, the agent's and the limits service's, against a treasury that needs both. The fee was thirty-six millionths of an XRP.",
+   "device_h": 712
+  },
+  {
+   "id": "s4",
+   "kind": "laptop",
+   "layout": "wide",
+   "src": "approve.webm",
+   "cut": [
+    2.0,
+    22.5
+   ],
+   "crop": [
+    1920,
+    1080,
+    0,
+    0
+   ],
+   "max_speed": 1.8,
+   "step": "04",
+   "head": "Above the cap, a human signs",
+   "sub": "The operator approves with the operator key; the limits service checks it is exactly this payment.",
+   "vo": "The forty waits for a human. The operator sees which checks passed, and approves with the operator key. The limits service checks that the signature covers exactly this payment before it reaches the ledger.",
+   "device_h": 712
+  },
+  {
+   "id": "s5",
+   "kind": "laptop",
+   "layout": "wide",
+   "src": "inject.webm",
+   "cut": [
+    2.0,
+    35.5
+   ],
+   "crop": [
+    1920,
+    1080,
+    0,
+    0
+   ],
+   "max_speed": 2.3,
+   "step": "05",
+   "head": "Told to pay a stranger, it is refused",
+   "sub": "The agent tries. The limits service refuses: not on the payee list. It never reaches the ledger.",
+   "vo": "Now the attack. The operator is told to pay two hundred dollars to a new address, right now, and passes it to the agent. The agent tries. The limits service refuses: not on the payee list. With no second signature, it never reaches the ledger.",
+   "device_h": 712
+  },
+  {
+   "id": "s6",
+   "kind": "laptop",
+   "layout": "wide",
+   "src": "term_refusals.webm",
+   "cut": [
+    0.3,
+    13.5
+   ],
+   "crop": [
+    1760,
+    960,
+    80,
+    60
+   ],
+   "max_speed": 1.3,
+   "step": "06",
+   "head": "Every limit, reproduced live",
+   "sub": "Cap, daily budget, monthly limit, unknown payee, pause, duplicate. The agent alone: rejected by the ledger.",
+   "vo": "Every limit holds the same way: the cap, the daily budget, a contractor's monthly limit, the pause switch, a duplicate. And when the agent skips the limits service and submits alone, the XRP Ledger rejects it.",
+   "device_h": 712
+  },
+  {
+   "id": "s7",
+   "kind": "laptop",
+   "layout": "wide",
+   "src": "payee.webm",
+   "cut": [
+    2.0,
+    16.5
+   ],
+   "crop": [
+    1920,
+    1080,
+    0,
+    0
+   ],
+   "max_speed": 1.8,
+   "step": "07",
+   "head": "The contractor sees it land",
+   "sub": "Wanjiru's page reads her RLUSD balance and payments straight from the ledger.",
+   "vo": "In Nairobi, Wanjiru's page shows the RLUSD arriving and every payment she has received, read straight from the ledger, each with its transaction link.",
+   "device_h": 712
+  },
+  {
+   "id": "s8",
+   "kind": "laptop",
+   "layout": "wide",
+   "src": "invite.webm",
+   "cut": [
+    [
+     2.0,
+     17.0
+    ],
+    [
+     27.0,
+     34.0
+    ]
+   ],
+   "crop": [
+    1920,
+    1080,
+    0,
+    0
+   ],
+   "max_speed": 2.2,
+   "step": "08",
+   "head": "New contractors join from a link",
+   "sub": "A testnet wallet with an RLUSD trust line, or their own. Switched off until the operator confirms the address.",
+   "vo": "New contractors join from a link: a wallet with an RLUSD trust line in about ten seconds, or their own. They stay switched off until the operator confirms the address.",
+   "device_h": 712
+  },
+  {
+   "id": "p3",
+   "kind": "slide",
+   "image": "img/agent-card.jpg",
+   "label": "Why the XRP Ledger",
+   "head": "The limit lives in the account, not in application code.",
+   "bullets": [
+    {
+     "k": "Signer lists",
+     "v": "Quorum two, the agent holds weight one. Enforced by every validator."
+    },
+    {
+     "k": "RLUSD",
+     "v": "A US dollar stablecoin, paid straight into the contractor's wallet."
+    },
+    {
+     "k": "Seconds, not days",
+     "v": "Validated in seconds for 0.000036 XRP in fees."
+    }
+   ],
+   "vo": "Why the XRP Ledger? Signer lists put the limit in the account itself, enforced by every validator, not by application code. RLUSD lands straight in the contractor's wallet, in seconds, for a fraction of a cent."
+  },
+  {
+   "id": "p4",
+   "kind": "slide",
+   "image": "img/payee-phone.jpg",
+   "label": "Business",
+   "head": "Sold to agencies that pay contractors across the continent.",
+   "bullets": [
+    {
+     "k": "Customers",
+     "v": "Agencies and SMEs in Lagos and Accra with contractors in East and Southern Africa."
+    },
+    {
+     "k": "Pricing",
+     "v": "A share of payout volume, under one percent."
+    },
+    {
+     "k": "Today",
+     "v": "17 payments on XRPL testnet, none signed by the agent alone."
+    },
+    {
+     "k": "Next",
+     "v": "A cash-out partner per corridor, then mainnet."
+    }
+   ],
+   "vo": "Harmattan sells to agencies in Lagos and Accra paying contractors across the continent, for under one percent of volume. On testnet it has made seventeen payments, none signed by the agent alone. Next: a cash-out partner in each corridor, then mainnet."
+  },
+  {
+   "id": "p5",
+   "kind": "slide",
+   "image": "img/top.jpg",
+   "label": "Agentic Finance",
+   "head": "Would your CFO sign off?",
+   "bullets": [
+    {
+     "k": "The agent transacts",
+     "v": "RLUSD payments executed by the agent on XRPL testnet."
+    },
+    {
+     "k": "Limits it cannot touch",
+     "v": "Enforced by the ledger's signer list and an independent service."
+    },
+    {
+     "k": "A human in control",
+     "v": "The operator sets the limits and signs above them, outside the agent."
+    }
+   ],
+   "vo": "The track asks one question: would your CFO sign off? Here the agent executes the payments, the ledger and an independent service enforce the limits, and the operator sets them from outside the agent."
+  },
+  {
+   "id": "e0",
+   "kind": "end",
+   "image": "img/bg.jpg",
+   "lines": [
+    "Two signatures.",
+    "The agent holds one."
+   ],
+   "links": [
+    [
+     "Code",
+     "github.com/big14way/harmattan"
+    ],
+    [
+     "Treasury",
+     "testnet.xrpl.org, rhpWYS7RnKaRXG9Se4FDQE4eAMG9nZupEG"
+    ],
+    [
+     "Stack",
+     "xrpl.js, RLUSD, Claude Haiku 5.5, Next.js"
+    ]
+   ],
+   "footer": "Harmattan \u00b7 RLUSD on the XRP Ledger testnet",
+   "vo": "Harmattan. Two signatures, and the agent holds one. The code and every transaction are linked below."
+  }
+ ]
+}
