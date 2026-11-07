@@ -11,7 +11,7 @@
   },
   "scripts": {
     "check": "pnpm typecheck && pnpm test",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p operator/tsconfig.json --noEmit",
     "test": "vitest run",
     "setup:testnet": "tsx scripts/setup-testnet.ts",
     "probe": "tsx scripts/probe-ledger.ts",
@@ -21,7 +21,9 @@
     "limits": "tsx limits/src/server.ts",
     "seed": "tsx scripts/seed-payables.ts",
     "operator": "tsx scripts/operator.ts",
-    "refusals": "tsx scripts/refusals.ts"
+    "refusals": "tsx scripts/refusals.ts",
+    "dashboard": "pnpm --filter @harmattan/operator dev",
+    "dashboard:build": "pnpm --filter @harmattan/operator build"
   },
   "devDependencies": {
     "@types/node": "^26.6.6",

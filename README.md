@@ -47,9 +47,15 @@ All addresses and setup transactions are in [`deployments/testnet.json`](deploym
 
 That is why RLUSD limits are enforced by the treasury's signer list rather than by an RLUSD channel or escrow.
 
+## Operator dashboard
+
+`pnpm dashboard` serves the operator console on http://127.0.0.1:3000 (Next.js). It shows what the agent paid today against the budget, the approvals waiting for the operator's signature with the checks that passed and the one that did not, the agent's signers and policy, the limits (cap, daily budget, pause switch), payees with their monthly limits, the payment schedule, and the full decision log with explorer links and a CSV export.
+
+The dashboard's server holds the operator token and the operator key; the browser never sees either. Approving a payment signs it on the server with the operator key and hands it to the limits service, which checks it is exactly the requested payment before submitting.
+
 ## Run it
 
-Requires Node 20+ and pnpm. No credentials needed: testnet accounts come from the XRPL faucet, and without `ANTHROPIC_API_KEY` the agent uses a deterministic rules planner instead of Claude.
+Requires Node 20+ and pnpm. No credentials needed: testnet accounts come from the XRPL faucet, and without `ANTHROPIC_API_KEY` the agent uses a deterministic rules planner instead of Claude. With a key, the agent plans with Claude Haiku 5.5 by default (`HARMATTAN_MODEL` to change it).
 
 ```bash
 pnpm install
@@ -62,6 +68,7 @@ pnpm operator approvals   # the operator's queue
 pnpm operator approve <id>                 # sign with the operator key and pay
 pnpm agent --say "pay 200 to rXXXX now"    # try to make it pay a stranger
 pnpm refusals             # reproduce every refusal on testnet (cap, budget, monthly, unknown, paused, duplicate, bypass)
+pnpm dashboard            # operator console on http://127.0.0.1:3000
 pnpm status               # balances and the signer list
 pnpm check                # typecheck + tests
 ```
@@ -88,18 +95,18 @@ PASS  agent bypasses the limits service  tefBAD_QUORUM      submitted straight t
 ledger/    XRPL client, RLUSD helpers, multisig, submit, deployment record
 limits/    the independent co-signer: policy store, pure policy evaluator, approvals queue, HTTP API
 agent/     tools (list_due_payments, pay_payee), Claude planner (Vercel AI SDK) and rules planner
-operator/  the operator's console: policy changes, approvals signed with the operator key
+operator/  the operator dashboard (Next.js) and console: policy changes, approvals signed with the operator key
 scripts/   testnet setup, treasury top-up, ledger probes, operator CLI, refusal run, status, demo schedule
 tests/     policy, signature and money tests
 ```
 
 ## Status
 
-Built during the hackathon. Working now: testnet setup, the signer-list controls, the limits service, autonomous agent payments planned by Claude, the operator approvals queue, and a reproducible refusal run. Next: operator dashboard, WhatsApp receipts, payee onboarding, and deployment.
+Built during the hackathon. Working now: testnet setup, the signer-list controls, the limits service, autonomous agent payments planned by Claude, the operator approvals queue, a reproducible refusal run, and the operator dashboard. Next: WhatsApp receipts, payee onboarding, and deployment.
 
 ## Libraries
 
-[xrpl.js](https://js.xrpl.org), [Vercel AI SDK](https://ai-sdk.dev) with the Anthropic provider, [zod](https://zod.dev), [tsx](https://tsx.is), [vitest](https://vitest.dev).
+[xrpl.js](https://js.xrpl.org), [Vercel AI SDK](https://ai-sdk.dev) with the Anthropic provider, [zod](https://zod.dev), [Next.js](https://nextjs.org), [React](https://react.dev), [Tailwind CSS](https://tailwindcss.com), [tsx](https://tsx.is), [vitest](https://vitest.dev). Fonts: Inter Tight and JetBrains Mono (Google Fonts, OFL).
 
 ## License
 

@@ -9,3 +9,7 @@ target/
 neardev/
 .data/
 !.env.example
+
+# Next.js generated
+operator/next-env.d.ts
+*.tsbuildinfo

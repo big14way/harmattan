@@ -1,0 +1,294 @@
+'use client'
+
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { money, shortAddress } from '@/lib/format'
+import type { DashboardState } from '@/lib/types'
+import { AgentCard } from './agent-card'
+import { Approvals } from './approvals'
+import { Ledger } from './ledger'
+import { Limits } from './limits'
+import { Payees } from './payees'
+import { Schedule } from './schedule'
+import { ExternalLink, Icon, Logo } from './ui'
+
+export interface Toast {
+  tone: 'good' | 'bad'
+  text: string
+  href?: string
+}
+
+export interface Actions {
+  run: (fn: () => Promise<Toast | void>) => Promise<boolean>
+  busy: boolean
+}
+
+export async function api<T = unknown>(path: string, method: string, body?: unknown): Promise<T> {
+  const res = await fetch(path, { method, headers: { 'content-type': 'application/json' }, body: body === undefined ? undefined : JSON.stringify(body) })
+  const json = (await res.json().catch(() => ({}))) as T & { error?: string }
+  if (!res.ok || json.error) throw new Error(json.error ?? `Request failed (${res.status})`)
+  return json
+}
+
+const NAV = [
+  { key: 'a', label: 'Approvals', target: 'approvals' },
+  { key: 'l', label: 'Limits', target: 'limits' },
+  { key: 'p', label: 'Payees', target: 'payees' },
+  { key: 'g', label: 'Ledger', target: 'ledger' },
+]
+
+function ThemeToggle() {
+  const [dark, setDark] = useState(false)
+  useEffect(() => setDark(document.documentElement.dataset.theme === 'dark'), [])
+  return (
+    <button
+      aria-label={dark ? 'Use light theme' : 'Use dark theme'}
+      className="inline-flex size-9 items-center justify-center rounded-[6px] text-muted hover:text-ink"
+      onClick={() => {
+        const next = !dark
+        setDark(next)
+        if (next) document.documentElement.dataset.theme = 'dark'
+        else delete document.documentElement.dataset.theme
+        try {
+          localStorage.setItem('harmattan-theme', next ? 'dark' : 'light')
+        } catch {}
+      }}
+    >
+      <Icon name={dark ? 'sun' : 'moon'} size={17} />
+    </button>
+  )
+}
+
+function TopBar({ state }: { state: DashboardState | null }) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const el = e.target as HTMLElement
+      if (e.metaKey || e.ctrlKey || e.altKey || el.closest('input, textarea, select, [contenteditable]')) return
+      const item = NAV.find((n) => n.key === e.key.toLowerCase())
+      if (item) document.getElementById(item.target)?.scrollIntoView({ behavior: 'smooth' })
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
+  const paused = state?.view.policy.paused
+  return (
+    <header className="sticky top-0 z-30 border-b border-line bg-canvas/85 backdrop-blur">
+      <div className="mx-auto flex h-[60px] max-w-[1200px] items-center justify-between gap-4 px-4 sm:px-8">
+        <a href="#top" className="flex items-center gap-2.5">
+          <Logo />
+          <span className="text-[18px] font-normal tracking-[-0.02em]">Harmattan</span>
+        </a>
+        <nav className="hidden items-center gap-6 font-mono text-[13px] font-light md:flex">
+          {NAV.map((n) => (
+            <a key={n.key} href={`#${n.target}`} className="text-ink hover:opacity-70">
+              <span className="text-muted">[{n.key.toUpperCase()}]</span> {n.label}
+            </a>
+          ))}
+        </nav>
+        <div className="flex items-center gap-2">
+          {state ? (
+            <span className={`hidden items-center gap-2 rounded-full border px-2.5 py-1 font-mono text-[11px] uppercase tracking-[0.12em] sm:inline-flex ${paused ? 'border-warn/30 text-warn' : 'border-line text-muted'}`}>
+              <span className={`size-1.5 rounded-full ${paused ? 'bg-warn' : 'bg-good'}`} />
+              {paused ? 'Paused' : 'Live'} · XRPL {state.network}
+            </span>
+          ) : null}
+          <ThemeToggle />
+        </div>
+      </div>
+    </header>
+  )
+}
+
+function Stat({ label, value, sub, children }: { label: string; value: string; sub?: React.ReactNode; children?: React.ReactNode }) {
+  return (
+    <div className="flex min-w-0 flex-col gap-2 px-0 py-5 sm:px-6 sm:first:pl-0">
+      <p className="label">{label}</p>
+      <p className="num text-[28px] font-light leading-[32px] tracking-[-0.02em] text-ink">{value}</p>
+      {children}
+      {sub ? <p className="text-[13px] leading-5 text-muted">{sub}</p> : null}
+    </div>
+  )
+}
+
+function Overview({ state }: { state: DashboardState }) {
+  const { view, approvals, decisions, treasury } = state
+  const pending = approvals.filter((a) => a.status === 'pending')
+  const paidIds = new Set(decisions.filter((d) => d.outcome === 'cosigned').map((d) => d.paymentId))
+  const stopped = decisions.filter((d) => d.day === view.today.day && d.outcome === 'refused' && !paidIds.has(d.paymentId))
+  const stoppedIds = new Set(stopped.map((d) => d.paymentId))
+  const stoppedCents = [...stoppedIds].reduce((sum, id) => sum + (stopped.find((d) => d.paymentId === id)?.cents ?? 0), 0)
+  const spent = view.today.spentCents
+  const budget = view.policy.dailyBudgetCents
+  const pct = budget ? Math.min(100, (spent / budget) * 100) : 0
+
+  const headline = pending.length
+    ? `${pending.length} payment${pending.length > 1 ? 's' : ''} waiting for your signature.`
+    : view.policy.paused
+      ? 'Agent payments are paused.'
+      : 'The agent is paying inside your limits.'
+
+  return (
+    <section id="top" className="relative">
+      <div className="grid-paper pointer-events-none absolute inset-x-0 top-0 h-[340px]" aria-hidden />
+      <div className="relative mx-auto max-w-[1200px] px-4 pb-10 pt-14 sm:px-8 sm:pt-20">
+        <p className="eyebrow">Operator console · {new Date(state.now).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', timeZone: view.policy.timezone })}</p>
+        <h1 className="mt-4 max-w-[900px] text-[40px] font-light leading-[1.02] tracking-[-0.03em] text-ink sm:text-[64px]">{headline}</h1>
+        <p className="mt-5 max-w-[680px] text-[16px] leading-[25px] text-muted sm:text-[18px] sm:leading-[28px]">
+          Today the agent paid {money(spent)} of your {money(budget)} budget
+          {stoppedIds.size ? `, and ${stoppedIds.size} request${stoppedIds.size > 1 ? 's were' : ' was'} stopped` : ''}. Every treasury payment needs two signatures on the XRP Ledger: the agent holds one, and the second comes from the limits service or from you.
+        </p>
+
+        <div className="mt-10 grid grid-cols-1 divide-y divide-line border-y border-line sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-4 lg:divide-x">
+          <Stat
+            label="Treasury"
+            value={treasury ? money(treasury.rlusdCents) : '—'}
+            sub={treasury ? <ExternalLink href={`${state.explorer}/accounts/${treasury.address}`}>{`${treasury.xrp.toFixed(1)} XRP for fees · ${shortAddress(treasury.address)}`}</ExternalLink> : 'Ledger unreachable'}
+          />
+          <Stat label="Paid by the agent today" value={money(spent)} sub={`of ${money(budget)} · ${money(view.today.remainingCents)} left`}>
+            <div className="h-1 w-full overflow-hidden rounded-full bg-sunken">
+              <div className="h-full rounded-full bg-ink transition-all" style={{ width: `${pct}%` }} />
+            </div>
+          </Stat>
+          <Stat
+            label="Waiting for you"
+            value={String(pending.length)}
+            sub={pending.length ? `${money(pending.reduce((s, a) => s + a.cents, 0))} held until you sign` : 'Nothing above your limits'}
+          />
+          <Stat label="Stopped today" value={String(stoppedIds.size)} sub={stoppedIds.size ? `${money(stoppedCents)} asked for, none sent` : 'No refusals today'} />
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function LoadingState() {
+  return (
+    <div className="mx-auto max-w-[1200px] px-4 pt-20 sm:px-8">
+      <div className="skeleton h-3 w-48" />
+      <div className="skeleton mt-6 h-14 w-[70%]" />
+      <div className="skeleton mt-4 h-5 w-[50%]" />
+      <div className="mt-10 grid grid-cols-2 gap-6 lg:grid-cols-4">
+        {[0, 1, 2, 3].map((i) => (
+          <div key={i} className="skeleton h-24" />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function ErrorState({ message, retry }: { message: string; retry: () => void }) {
+  return (
+    <div className="mx-auto max-w-[720px] px-4 pt-24 sm:px-8">
+      <p className="eyebrow">Can&apos;t reach the limits service</p>
+      <h1 className="mt-4 text-[36px] font-light leading-[1.1] tracking-[-0.025em]">The console needs the limits service to show and change anything.</h1>
+      <p className="mt-4 text-[16px] leading-[25px] text-muted">
+        Start it with <code className="rounded bg-sunken px-1.5 py-0.5 font-mono text-[13px] text-ink">pnpm limits</code> in the repository root. Until it is running the
+        agent cannot get a second signature, so no payment can leave the treasury.
+      </p>
+      <p className="mt-3 font-mono text-[12px] text-faint">{message}</p>
+      <button onClick={retry} className="mt-6 rounded-[6px] border border-line bg-surface px-4 py-2.5 text-[14px] font-normal hover:border-line-strong">
+        Try again
+      </button>
+    </div>
+  )
+}
+
+export function Dashboard() {
+  const [state, setState] = useState<DashboardState | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [busy, setBusy] = useState(false)
+  const [toast, setToast] = useState<Toast | null>(null)
+  const [now, setNow] = useState(() => Date.now())
+
+  const load = useCallback(async () => {
+    try {
+      const s = await api<DashboardState>('/api/state', 'GET')
+      setState(s)
+      setError(null)
+      setNow(Date.now())
+    } catch (e) {
+      setError((e as Error).message)
+    }
+  }, [])
+
+  useEffect(() => {
+    void load()
+    const t = setInterval(() => void load(), 4000)
+    return () => clearInterval(t)
+  }, [load])
+
+  useEffect(() => {
+    if (!toast) return
+    const t = setTimeout(() => setToast(null), 7000)
+    return () => clearTimeout(t)
+  }, [toast])
+
+  const actions: Actions = useMemo(
+    () => ({
+      busy,
+      run: async (fn) => {
+        setBusy(true)
+        try {
+          const t = await fn()
+          if (t) setToast(t)
+          await load()
+          return true
+        } catch (e) {
+          setToast({ tone: 'bad', text: (e as Error).message })
+          return false
+        } finally {
+          setBusy(false)
+        }
+      },
+    }),
+    [busy, load],
+  )
+
+  return (
+    <div className="min-h-screen">
+      <TopBar state={state} />
+      {!state && error ? <ErrorState message={error} retry={() => void load()} /> : null}
+      {!state && !error ? <LoadingState /> : null}
+      {state ? (
+        <main>
+          {error ? (
+            <div className="border-b border-warn/30 bg-warn-bg px-4 py-2 text-center text-[13px] text-warn">Lost contact with the limits service; showing the last state. {error}</div>
+          ) : null}
+          <Overview state={state} />
+          <div className="mx-auto flex max-w-[1200px] flex-col gap-24 px-4 pb-24 pt-10 sm:px-8">
+            <Approvals state={state} now={now} actions={actions} />
+            <AgentCard state={state} now={now} />
+            <Limits state={state} actions={actions} />
+            <Payees state={state} actions={actions} />
+            <Schedule state={state} />
+            <Ledger state={state} now={now} />
+          </div>
+          <footer className="border-t border-line">
+            <div className="mx-auto flex max-w-[1200px] flex-col gap-3 px-4 py-8 text-[13px] text-muted sm:flex-row sm:items-center sm:justify-between sm:px-8">
+              <span className="flex items-center gap-2">
+                <Logo size={18} /> Harmattan · RLUSD on the XRP Ledger {state.network}
+              </span>
+              {state.signerListTx ? <ExternalLink href={`${state.explorer}/transactions/${state.signerListTx}`}>Treasury signer list on the ledger</ExternalLink> : null}
+            </div>
+          </footer>
+        </main>
+      ) : null}
+      {toast ? (
+        <div role="status" className="fixed inset-x-4 bottom-4 z-40 mx-auto max-w-md rounded-[10px] border border-line bg-surface p-4 shadow-card sm:inset-x-auto sm:right-6">
+          <div className="flex items-start gap-3">
+            <span className={`mt-0.5 inline-flex size-5 shrink-0 items-center justify-center rounded-full ${toast.tone === 'good' ? 'bg-good-bg text-good' : 'bg-bad-bg text-bad'}`}>
+              <Icon name={toast.tone === 'good' ? 'check' : 'x'} size={12} />
+            </span>
+            <div className="min-w-0 text-[14px] leading-5">
+              <p className="text-ink">{toast.text}</p>
+              {toast.href ? (
+                <ExternalLink href={toast.href} className="mt-1 text-[13px] text-muted">
+                  View on the XRPL explorer
+                </ExternalLink>
+              ) : null}
+            </div>
+          </div>
+        </div>
+      ) : null}
+    </div>
+  )
+}
