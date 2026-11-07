@@ -14,6 +14,7 @@ import {
   toCents,
 } from '../../ledger/src/index.ts'
 import { LimitsClient, type CosignResponse } from '../../limits/src/client.ts'
+import { sendPaymentReceipts } from '../../receipts/src/index.ts'
 import { calendarKeys } from '../../limits/src/decisions.ts'
 import { loadPayables, updatePayable } from './payables.ts'
 
@@ -36,6 +37,8 @@ export interface PayResult {
   needsApproval?: boolean
   /** Approval request the operator sees in the dashboard, when the payment needs a human. */
   approvalId?: string
+  /** Receipt delivery for a paid payment: sent on WhatsApp, or logged when WhatsApp is not configured. */
+  receipts?: string
   txHash?: string
   explorerUrl?: string
 }
@@ -140,6 +143,20 @@ export function createAgentTools(limits = new LimitsClient()) {
         explorerUrl: res.tx?.explorerUrl,
         note: res.approvalId ? `${res.reason} (approval ${res.approvalId})` : res.reason,
       })
+    }
+    if (res.status === 'paid' && res.tx) {
+      const sent = await sendPaymentReceipts({
+        paymentId,
+        payeeId: known?.id ?? null,
+        payeeName: known?.name ?? destination,
+        payeePhone: known?.phone,
+        cents,
+        memo: input.note,
+        txHash: res.tx.hash,
+        explorerUrl: res.tx.explorerUrl,
+        approvedBy: 'limits',
+      })
+      result.receipts = sent.map((r) => `${r.audience} ${r.status}`).join(', ')
     }
     log({ tool: 'pay_payee', ...result })
     return result

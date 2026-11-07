@@ -12,6 +12,10 @@ export const PayeePolicySchema = z.object({
   /** Most the agent may pay this payee in one calendar month (operator time zone). */
   monthlyLimitCents: z.number().int().nonnegative(),
   active: z.boolean(),
+  /** WhatsApp number for receipts, E.164. */
+  phone: z.string().regex(/^\+[1-9]\d{6,14}$/).optional(),
+  /** Joined through an invite link; inactive until the operator confirms the address. */
+  pendingConfirmation: z.boolean().optional(),
 })
 export type PayeePolicy = z.infer<typeof PayeePolicySchema>
 

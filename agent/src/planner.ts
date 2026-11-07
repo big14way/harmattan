@@ -85,7 +85,7 @@ export async function runWithRules(tools: AgentTools, instruction: string): Prom
   const payments: PayResult[] = []
   const adhoc = parseInstruction(instruction)
   if (adhoc) {
-    payments.push(await tools.payPayee({ ...adhoc, note: 'operator instruction' }))
+    payments.push(await tools.payPayee({ ...adhoc, note: 'Ad hoc payment' }))
   } else {
     const due = await tools.listDuePayments()
     for (const d of due.due) {

@@ -12,7 +12,8 @@ import {
   readDeployment,
   type TxOutcome,
 } from '../../ledger/src/index.ts'
-import { updatePayable } from '../../agent/src/payables.ts'
+import { loadPayables, updatePayable } from '../../agent/src/payables.ts'
+import { sendPaymentReceipts } from '../../receipts/src/index.ts'
 import type { Approval } from '../../limits/src/approvals.ts'
 import type { PolicyView } from '../../limits/src/client.ts'
 import type { DecisionRecord } from '../../limits/src/decisions.ts'
@@ -85,6 +86,19 @@ export class OperatorConsole {
         txHash: result.tx.hash,
         explorerUrl: result.tx.explorerUrl,
         note: 'Approved by operator',
+      })
+      const payee = approval.payeeId ? (await this.view()).policy.payees[approval.payeeId] : undefined
+      const scheduled = loadPayables().find((p) => p.id === approval.paymentId)
+      await sendPaymentReceipts({
+        paymentId: approval.paymentId,
+        payeeId: approval.payeeId,
+        payeeName: payee?.name ?? approval.destination,
+        payeePhone: payee?.phone,
+        cents: approval.cents,
+        memo: scheduled?.description ?? approval.memo,
+        txHash: result.tx.hash,
+        explorerUrl: result.tx.explorerUrl,
+        approvedBy: 'operator',
       })
     }
     return result

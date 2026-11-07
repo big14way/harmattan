@@ -40,8 +40,8 @@ export function AgentCard({ state, now }: { state: DashboardState; now: number }
     <section>
       <SectionHeader
         id="agent"
-        index="02"
-        eyebrow="The agent"
+        index="03"
+        eyebrow="Controls"
         title="What the agent can and cannot do"
         lead="The agent plans and signs payments with its own key. The treasury's signer list on the ledger decides whether that signature is ever enough."
       />

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { clock, codeText, money, outcomeTag, relTime, shortAddress } from '@/lib/format'
-import type { DashboardState, DecisionRecord } from '@/lib/types'
+import type { DashboardState, DecisionRecord, ReceiptRecord } from '@/lib/types'
 import { Avatar, ExternalLink, Glyph, Icon, SectionHeader, Tag } from './ui'
 
 const FILTERS = [
@@ -13,7 +13,7 @@ const FILTERS = [
   { key: 'failed', label: 'Failed', match: (d: DecisionRecord) => d.outcome === 'failed' },
 ] as const
 
-function Detail({ d }: { d: DecisionRecord }) {
+function Detail({ d, receipts }: { d: DecisionRecord; receipts: ReceiptRecord[] }) {
   return (
     <div className="grid grid-cols-1 gap-x-8 gap-y-3 bg-sunken px-6 py-4 text-[13px] sm:grid-cols-2">
       <div className="sm:col-span-2">
@@ -42,6 +42,23 @@ function Detail({ d }: { d: DecisionRecord }) {
           )}
         </p>
       </div>
+      {d.outcome === 'cosigned' ? (
+        <div className="sm:col-span-2">
+          <p className="label">WhatsApp receipts</p>
+          {receipts.length ? (
+            <ul className="mt-1 flex flex-col gap-1">
+              {receipts.map((r) => (
+                <li key={r.id} className="text-ink">
+                  {r.audience === 'payee' ? 'Payee' : 'You'}:{' '}
+                  {r.status === 'sent' ? `sent to ${r.to}` : r.status === 'failed' ? `failed (${r.detail})` : `saved, not sent (${r.detail?.toLowerCase()})`}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="mt-1 text-muted">None recorded for this payment.</p>
+          )}
+        </div>
+      ) : null}
     </div>
   )
 }
@@ -58,7 +75,7 @@ export function Ledger({ state, now }: { state: DashboardState; now: number }) {
     <section>
       <SectionHeader
         id="ledger"
-        index="06"
+        index="07"
         eyebrow="Ledger"
         title="Every request, refusals included"
         lead="The limits service logs each request the agent makes before anything reaches the XRP Ledger. Paid rows link to the transaction."
@@ -119,7 +136,7 @@ export function Ledger({ state, now }: { state: DashboardState; now: number }) {
                     </div>
                     <Icon name="chevron" size={14} className={`hidden text-faint transition-transform sm:block ${isOpen ? 'rotate-90' : ''}`} />
                   </button>
-                  {isOpen ? <Detail d={d} /> : null}
+                  {isOpen ? <Detail d={d} receipts={state.receipts.filter((r) => r.paymentId === d.paymentId)} /> : null}
                 </li>
               )
             })}

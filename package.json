@@ -23,7 +23,8 @@
     "operator": "tsx scripts/operator.ts",
     "refusals": "tsx scripts/refusals.ts",
     "dashboard": "pnpm --filter @harmattan/operator dev",
-    "dashboard:build": "pnpm --filter @harmattan/operator build"
+    "dashboard:build": "pnpm --filter @harmattan/operator build",
+    "agent:serve": "tsx agent/src/server.ts"
   },
   "devDependencies": {
     "@types/node": "^26.6.6",

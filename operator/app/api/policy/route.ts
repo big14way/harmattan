@@ -10,7 +10,16 @@ const Body = z.object({
   cap: Amount.optional(),
   budget: Amount.optional(),
   paused: z.boolean().optional(),
-  payee: z.object({ id: z.string(), monthly: Amount.optional(), active: z.boolean().optional() }).optional(),
+  payee: z
+    .object({
+      id: z.string(),
+      monthly: Amount.optional(),
+      active: z.boolean().optional(),
+      /** Operator confirms an address that arrived through an invite link; this switches the payee on. */
+      confirm: z.literal(true).optional(),
+      phone: z.string().regex(/^\+[1-9]\d{6,14}$/, 'WhatsApp number in international format, e.g. +254712345678').nullable().optional(),
+    })
+    .optional(),
 })
 
 /** The operator changes limits here; the dashboard server holds the operator token, the browser never does. */
@@ -26,14 +35,20 @@ export async function PUT(req: Request) {
       const { policy } = await op.view()
       const p = policy.payees[body.payee.id]
       if (!p) return Response.json({ error: `Unknown payee ${body.payee.id}` }, { status: 404 })
-      update.payees = {
-        ...policy.payees,
-        [p.id]: {
-          ...p,
-          monthlyLimitCents: body.payee.monthly !== undefined ? toCents(body.payee.monthly) : p.monthlyLimitCents,
-          active: body.payee.active ?? p.active,
-        },
+      const next = {
+        ...p,
+        monthlyLimitCents: body.payee.monthly !== undefined ? toCents(body.payee.monthly) : p.monthlyLimitCents,
+        active: body.payee.confirm ? true : (body.payee.active ?? p.active),
+        pendingConfirmation: body.payee.confirm ? undefined : p.pendingConfirmation,
       }
+      if (next.pendingConfirmation && next.active) {
+        return Response.json({ error: 'Confirm the address before switching this payee on' }, { status: 400 })
+      }
+      if (body.payee.phone !== undefined) {
+        if (body.payee.phone === null) delete next.phone
+        else next.phone = body.payee.phone
+      }
+      update.payees = { ...policy.payees, [p.id]: next }
     }
     return Response.json(await op.updatePolicy(update))
   } catch (err) {

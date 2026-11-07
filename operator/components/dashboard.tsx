@@ -2,12 +2,13 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { money, shortAddress } from '@/lib/format'
-import type { DashboardState } from '@/lib/types'
+import type { DashboardState, RunRecord } from '@/lib/types'
 import { AgentCard } from './agent-card'
 import { Approvals } from './approvals'
 import { Ledger } from './ledger'
 import { Limits } from './limits'
 import { Payees } from './payees'
+import { Runs, type RunControl } from './runs'
 import { Schedule } from './schedule'
 import { ExternalLink, Icon, Logo } from './ui'
 
@@ -31,6 +32,7 @@ export async function api<T = unknown>(path: string, method: string, body?: unkn
 
 const NAV = [
   { key: 'a', label: 'Approvals', target: 'approvals' },
+  { key: 'r', label: 'Run', target: 'runs' },
   { key: 'l', label: 'Limits', target: 'limits' },
   { key: 'p', label: 'Payees', target: 'payees' },
   { key: 'g', label: 'Ledger', target: 'ledger' },
@@ -109,7 +111,7 @@ function Stat({ label, value, sub, children }: { label: string; value: string; s
   )
 }
 
-function Overview({ state }: { state: DashboardState }) {
+function Overview({ state, control }: { state: DashboardState; control: RunControl }) {
   const { view, approvals, decisions, treasury } = state
   const pending = approvals.filter((a) => a.status === 'pending')
   const paidIds = new Set(decisions.filter((d) => d.outcome === 'cosigned').map((d) => d.paymentId))
@@ -136,6 +138,19 @@ function Overview({ state }: { state: DashboardState }) {
           Today the agent paid {money(spent)} of your {money(budget)} budget
           {stoppedIds.size ? `, and ${stoppedIds.size} request${stoppedIds.size > 1 ? 's were' : ' was'} stopped` : ''}. Every treasury payment needs two signatures on the XRP Ledger: the agent holds one, and the second comes from the limits service or from you.
         </p>
+
+        <div className="mt-8 flex flex-wrap gap-3">
+          <button
+            onClick={() => void control.start()}
+            disabled={control.running || !state.agent}
+            className="inline-flex items-center gap-2 rounded-[6px] border border-accent bg-accent px-4 py-2.5 text-[14px] font-normal text-accent-ink hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <Icon name="play" /> {control.running ? 'The agent is working…' : "Run today's payouts"}
+          </button>
+          <a href="#runs" className="inline-flex items-center gap-2 rounded-[6px] border border-line bg-surface px-4 py-2.5 text-[14px] font-normal hover:border-line-strong">
+            Give the agent an instruction
+          </a>
+        </div>
 
         <div className="mt-10 grid grid-cols-1 divide-y divide-line border-y border-line sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-4 lg:divide-x">
           <Stat
@@ -222,6 +237,31 @@ export function Dashboard() {
     return () => clearTimeout(t)
   }, [toast])
 
+  const [running, setRunning] = useState(false)
+  const control: RunControl = {
+    running,
+    start: async (instruction, planner) => {
+      setRunning(true)
+      try {
+        const run = await api<RunRecord>('/api/run', 'POST', { instruction, planner })
+        const paid = run.payments.filter((p) => p.status === 'paid').length
+        const waiting = run.payments.filter((p) => p.approvalId).length
+        const refused = run.payments.length - paid - waiting
+        setToast({
+          tone: 'good',
+          text: run.payments.length
+            ? `Agent run finished: ${paid} paid, ${waiting} waiting for you, ${refused} refused.`
+            : 'Agent run finished without attempting a payment. Its report is under Run the agent.',
+        })
+      } catch (e) {
+        setToast({ tone: 'bad', text: (e as Error).message })
+      } finally {
+        setRunning(false)
+        await load()
+      }
+    },
+  }
+
   const actions: Actions = useMemo(
     () => ({
       busy,
@@ -253,9 +293,10 @@ export function Dashboard() {
           {error ? (
             <div className="border-b border-warn/30 bg-warn-bg px-4 py-2 text-center text-[13px] text-warn">Lost contact with the limits service; showing the last state. {error}</div>
           ) : null}
-          <Overview state={state} />
+          <Overview state={state} control={control} />
           <div className="mx-auto flex max-w-[1200px] flex-col gap-24 px-4 pb-24 pt-10 sm:px-8">
             <Approvals state={state} now={now} actions={actions} />
+            <Runs state={state} now={now} control={control} />
             <AgentCard state={state} now={now} />
             <Limits state={state} actions={actions} />
             <Payees state={state} actions={actions} />

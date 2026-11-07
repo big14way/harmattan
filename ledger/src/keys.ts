@@ -63,8 +63,22 @@ export function saveWallet(role: Role, wallet: Wallet): void {
  * where the limits service and the operator's tools on the same machine both read it.
  */
 export function operatorToken(): string {
-  if (process.env.HARMATTAN_OPERATOR_TOKEN) return process.env.HARMATTAN_OPERATOR_TOKEN
-  const file = path.join(dataDir('keys'), 'operator-token')
+  return sharedToken('HARMATTAN_OPERATOR_TOKEN', 'operator-token')
+}
+
+/**
+ * Bearer token for starting agent runs (the dashboard's "Run the agent" and instructions). Separate
+ * from the operator token on purpose: the agent service checks this one, so it never holds a
+ * credential that could change the policy.
+ */
+export function agentTriggerToken(): string {
+  return sharedToken('HARMATTAN_AGENT_TRIGGER_TOKEN', 'agent-trigger-token')
+}
+
+function sharedToken(envName: string, fileName: string): string {
+  const fromEnv = process.env[envName]
+  if (fromEnv) return fromEnv
+  const file = path.join(dataDir('keys'), fileName)
   if (!existsSync(file)) writeFileSync(file, randomBytes(24).toString('hex') + '\n', { mode: 0o600 })
   return readFileSync(file, 'utf8').trim()
 }

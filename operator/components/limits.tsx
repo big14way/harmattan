@@ -117,7 +117,7 @@ export function Limits({ state, actions }: { state: DashboardState; actions: Act
     <section>
       <SectionHeader
         id="limits"
-        index="03"
+        index="04"
         eyebrow="Limits"
         title="Your limits"
         lead="Changes go to the limits service, which the agent can read but not write. They apply to the very next request."

@@ -13,7 +13,7 @@ export function Schedule({ state }: { state: DashboardState }) {
     <section>
       <SectionHeader
         id="schedule"
-        index="05"
+        index="06"
         eyebrow="Schedule"
         title={due.length ? `${due.length} payment${due.length > 1 ? 's' : ''} due for the agent` : 'The agent is up to date'}
         lead="Your payment schedule. The agent works through what is due on each run and records what happened to every item."
