@@ -24,7 +24,10 @@
     "refusals": "tsx scripts/refusals.ts",
     "dashboard": "pnpm --filter @harmattan/operator dev",
     "dashboard:build": "pnpm --filter @harmattan/operator build",
-    "agent:serve": "tsx agent/src/server.ts"
+    "agent:serve": "tsx agent/src/server.ts",
+    "demo:reset": "tsx scripts/demo-reset.ts",
+    "start": "node --import tsx scripts/start-all.ts",
+    "rehearse": "tsx scripts/rehearse.ts"
   },
   "devDependencies": {
     "@types/node": "^26.6.6",

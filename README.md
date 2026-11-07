@@ -21,7 +21,7 @@ West African SMEs (agencies, studios, software shops) increasingly hire contract
 2. **Limits the agent cannot override.** The treasury's XRPL signer list needs two signatures; the agent holds one. An independent limits service adds the second only inside the operator's policy: per-payment cap, daily budget, per-payee monthly limit, payee allow-list, pause switch.
 3. **Human approval above the limits.** Anything over a limit waits for the operator, who signs exactly that payment with the operator key. The agent cannot route around it, split it or retry it elsewhere.
 4. **Operator dashboard.** Limits, approvals, payees, the schedule, and every request the agent made, refusals included, with explorer links and CSV export.
-5. **Receipts and payee onboarding** (in progress): WhatsApp receipts with the transaction link, and a link a new payee opens to set up a wallet and RLUSD trust line.
+5. **Receipts and payee onboarding.** WhatsApp receipts to the payee and the operator with the transaction link (Twilio sandbox), an invite link a new payee opens to create a testnet wallet with an RLUSD trust line or bring their own, and a payee page that shows the RLUSD arriving, read from the ledger.
 
 ## Why the XRP Ledger, and the track fit
 
@@ -82,9 +82,18 @@ That is why RLUSD limits are enforced by the treasury's signer list rather than 
 
 ## Operator dashboard
 
-`pnpm dashboard` serves the operator console on http://127.0.0.1:3400 (Next.js). It shows what the agent paid today against the budget, the approvals waiting for the operator's signature with the checks that passed and the one that did not, the agent's signers and policy, the limits (cap, daily budget, pause switch), payees with their monthly limits, the payment schedule, and the full decision log with explorer links and a CSV export.
+`pnpm dashboard` serves the operator console on http://127.0.0.1:3400 (Next.js):
 
-The dashboard's server holds the operator token and the operator key; the browser never sees either. Approving a payment signs it on the server with the operator key and hands it to the limits service, which checks it is exactly the requested payment before submitting.
+- **Today:** what the agent paid against the budget, what waits for the operator, what was stopped.
+- **Approvals:** each payment above a limit with the checks that passed and the one that did not; approve (signs with the operator key) or reject.
+- **Run the agent:** today's payouts or a plain-words instruction, with Claude or with an obedient test agent that follows any instruction, to show the limits hold without the model's judgement. Each run's payments and report.
+- **Limits:** per-payment cap, daily budget, pause switch.
+- **Payees:** monthly limits, WhatsApp numbers for receipts, invite links, and confirming a new payee's address before the agent can pay them.
+- **Schedule** and the **decision log** with explorer links, receipt status and CSV export.
+
+Public pages for payees: `/join/<invite>` (create a testnet wallet with an RLUSD trust line, or register an existing one; the payee lands switched off until the operator confirms) and `/p/<payee>` (balance and payments received, read live from the ledger).
+
+The dashboard's server holds the operator token and the operator key; the browser never sees either. Approving a payment signs it on the server with the operator key and hands it to the limits service, which checks it is exactly the requested payment before submitting. The agent runs in its own service with only the agent key; the dashboard starts runs with a separate trigger token that cannot change policy.
 
 ## Run it
 
@@ -95,20 +104,22 @@ pnpm install
 pnpm setup:testnet        # accounts, RLUSD trust lines, treasury signer list (idempotent)
 pnpm topup --rlusd 70 --faucet-xrp 10   # operator buys testnet RLUSD with faucet XRP on the XRPL AMM
 pnpm limits               # start the limits service on :8787 (keep it running)
-pnpm seed demo            # today's schedule: 12.00 to Nairobi, 9.50 to Kampala, 40.00 to Cape Town
+pnpm agent:serve          # start the agent service on :8788 (keep it running)
+pnpm dashboard            # operator console on http://127.0.0.1:3400
+pnpm demo:reset           # archive logs, restore the demo policy, schedule today's demo payments
+pnpm seed demo            # (or just schedule: 12.00 to Nairobi, 9.50 to Kampala, 40.00 to Cape Town)
 pnpm agent                # the agent pays what is due; the 40.00 waits for the operator
 pnpm operator approvals   # the operator's queue
 pnpm operator approve <id>                 # sign with the operator key and pay
 pnpm agent --say "pay 200 to rXXXX now"    # try to make it pay a stranger
 pnpm refusals             # reproduce every refusal on testnet (cap, budget, monthly, unknown, paused, duplicate, bypass)
-pnpm dashboard            # operator console on http://127.0.0.1:3400
 pnpm status               # balances and the signer list
 pnpm check                # typecheck + tests
 ```
 
 Demo amounts are small (15 RLUSD cap, 50 RLUSD daily budget, 30 RLUSD per payee per month) because testnet RLUSD is scarce: the faucet gives 10 RLUSD a day.
 
-Keys are written to `.data/` (git-ignored). Each process loads only its own role's key.
+Keys are written to `.data/` (git-ignored). Each process loads only its own role's key. Optional settings (WhatsApp receipts, daily schedule, company name, dashboard password) are listed in [`.env.example`](.env.example).
 
 `pnpm refusals` output on testnet:
 
@@ -122,21 +133,26 @@ PASS  duplicate payment id               DUPLICATE          Payment wanjiru-oct-
 PASS  agent bypasses the limits service  tefBAD_QUORUM      submitted straight to XRPL with only the agent signature (weight 1 of 2)
 ```
 
+## Deploy
+
+[`render.yaml`](render.yaml) deploys one free Render web service from the [`Dockerfile`](Dockerfile): `scripts/start-all.ts` runs the limits service, the agent service and the dashboard in one container and hands each process only the secrets its role needs. Set the agent, limits and operator testnet seeds, a dashboard password and (optionally) `ANTHROPIC_API_KEY` and the Twilio sandbox values in Render. The treasury key is never deployed. Within one container this separates the roles by process, not by machine (they share a user, and the supervisor starts with every secret); a production deployment runs the three as separate services. The free tier keeps the decision log on an ephemeral disk, so it starts fresh after a restart; payments themselves are always on the ledger.
+
 ## Layout
 
 ```
 ledger/    XRPL client, RLUSD helpers, multisig, submit, deployment record
 limits/    the independent co-signer: policy store, pure policy evaluator, approvals queue, HTTP API
-agent/     tools (list_due_payments, pay_payee), Claude planner (Vercel AI SDK) and rules planner
+agent/     tools (list_due_payments, pay_payee), Claude planner (Vercel AI SDK), rules planner, agent service
+receipts/  WhatsApp receipts (Twilio sandbox) with a zero-credential outbox
 operator/  the operator dashboard (Next.js) and console: policy changes, approvals signed with the operator key
-scripts/   testnet setup, treasury top-up, ledger probes, operator CLI, refusal run, status, demo schedule
-tests/     policy, approval, signature and money tests
+scripts/   testnet setup, treasury top-up, ledger probes, operator CLI, refusal run, demo reset, status, process supervisor
+tests/     policy, approval, signature, onboarding, receipt and money tests
 docs/      architecture diagram (SVG + PNG) and dashboard screenshot
 ```
 
 ## Status
 
-Built from scratch during the hackathon (first commit Nov 5 2026); no pre-existing code. Working now: testnet setup, the signer-list controls, the limits service, autonomous agent payments planned by Claude, the operator approvals queue, a reproducible refusal run, and the operator dashboard. Next: WhatsApp receipts, payee onboarding, and deployment.
+Built from scratch during the hackathon (first commit Nov 5 2026); no pre-existing code. Working now: testnet setup, the signer-list controls, the limits service, autonomous agent payments planned by Claude, the operator approvals queue, a reproducible refusal run, the operator dashboard with agent runs, WhatsApp receipts (sandbox or logged), payee onboarding and the payee page. Next: hosted deployment and the demo video.
 
 ## Libraries
 

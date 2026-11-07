@@ -1,0 +1,39 @@
+# Render Blueprint: one free web service running the limits service, the agent service and the
+# operator dashboard (scripts/start-all.ts gives each process only its own key).
+# Keys are XRPL testnet seeds; set them in the Render dashboard, never in the repo.
+services:
+  - type: web
+    name: harmattan
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    envVars:
+      - key: XRPL_NETWORK
+        value: testnet
+      - key: HARMATTAN_DASHBOARD_PASSWORD
+        sync: false
+      - key: HARMATTAN_AGENT_SEED
+        sync: false
+      - key: HARMATTAN_LIMITS_SEED
+        sync: false
+      - key: HARMATTAN_OPERATOR_SEED
+        sync: false
+      - key: HARMATTAN_OPERATOR_TOKEN
+        generateValue: true
+      - key: HARMATTAN_AGENT_TRIGGER_TOKEN
+        generateValue: true
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: HARMATTAN_COMPANY_NAME
+        sync: false
+      - key: HARMATTAN_AGENT_SCHEDULE
+        sync: false
+      - key: TWILIO_ACCOUNT_SID
+        sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+      - key: TWILIO_WHATSAPP_FROM
+        sync: false
+      - key: HARMATTAN_OPERATOR_WHATSAPP
+        sync: false
