@@ -1,7 +1,7 @@
 # Demo video narration
 
 Length 2:57.7, 1920x1080. Recorded from the live local dashboard and the XRPL testnet explorer with Playwright; narration by edge-tts (en-US-AndrewMultilingualNeural, +20%); no music.
-Recorded transactions: agent payment 642E31D161CDE86266800AE7EA070EC6F54B1111A9F27D95CCA20CD85188DDD9, operator-approved payment 9197A0677C2406870FB32EF5D5FE15D359B31298C406CC4B60BD2C5E0A44CC75. The terminal scene replays a real `pnpm refusals` run (schedules/refusals.log).
+Recorded transactions: agent payment 642E31D161CDE86266800AE7EA070EC6F54B1111A9F27D95CCA20CD85188DDD9, operator-approved payment 9197A0677C2406870FB32EF5D5FE15D359B31298C406CC4B60BD2C5E0A44CC75. The terminal scene replays a real `pnpm refusals` run (schedules/refusals.json, built from its output).
 
 To re-cut: record the clips listed in `scenes.json` into `clips/`, then build `demo.json` with the same toolchain (ffmpeg, Pillow, edge-tts).
 
