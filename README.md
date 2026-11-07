@@ -4,7 +4,40 @@
 
 A Lagos agency paying contractors in Nairobi, Kampala and Cape Town spends a week and three bank portals on it every month. Harmattan is an AI agent that pays them in RLUSD on the XRP Ledger, on schedule. It can only move money inside limits that it does not control: the ledger refuses any treasury payment the agent signs alone.
 
+![Operator dashboard: a 40 RLUSD payment above the 15 RLUSD cap waits for the operator's signature](docs/dashboard.png)
+
+## The problem
+
+West African SMEs (agencies, studios, software shops) increasingly hire contractors and buy services across the continent. Paying a designer in Nairobi, a developer in Kampala and an editor in Cape Town means a finance person, several bank portals, slow cross-border transfers and FX fees on every invoice. An AI agent could do this work on schedule, but no finance lead will hand an agent a treasury unless the limits hold even when the agent is wrong, compromised or talked into something.
+
+## Who it is for
+
+- **Operator:** the founder or finance lead of a Nigerian or Ghanaian SME with contractors and suppliers in Kenya, Uganda and South Africa. Sets the limits, approves what is above them, reads the log.
+- **Payees:** freelancers and small suppliers who receive RLUSD in their own XRPL wallet, with the transaction link as the receipt.
+
+## What it does
+
+1. **Pays on schedule.** A Claude-planned agent works through the payments due today and pays each one in RLUSD on the XRP Ledger.
+2. **Limits the agent cannot override.** The treasury's XRPL signer list needs two signatures; the agent holds one. An independent limits service adds the second only inside the operator's policy: per-payment cap, daily budget, per-payee monthly limit, payee allow-list, pause switch.
+3. **Human approval above the limits.** Anything over a limit waits for the operator, who signs exactly that payment with the operator key. The agent cannot route around it, split it or retry it elsewhere.
+4. **Operator dashboard.** Limits, approvals, payees, the schedule, and every request the agent made, refusals included, with explorer links and CSV export.
+5. **Receipts and payee onboarding** (in progress): WhatsApp receipts with the transaction link, and a link a new payee opens to set up a wallet and RLUSD trust line.
+
+## Why the XRP Ledger, and the track fit
+
+Built for Agentic Finance (Ripple): an AI agent moves a business's money and the XRP Ledger enforces the rules it plays by.
+
+| Requirement | How Harmattan meets it |
+| --- | --- |
+| An agent executes a transaction on XRPL Testnet | The agent has paid contractors in RLUSD on testnet ([first payment](https://testnet.xrpl.org/transactions/C73A841FD44F8CA19498CF61ED01A87C96D423E128B0AA2FA1E145CF30094677), [Claude-planned payout](https://testnet.xrpl.org/transactions/BBD3F6E3249AEC099E255833800915C15E05C10B23E1254686BF34250F1602E7)) |
+| Limits enforced somewhere the agent does not control | On the ledger (signer list, quorum 2, agent weight 1) and by an independent co-signing service |
+| A human operator sets or changes the limits outside the agent | Operator dashboard and the limits service's operator-only API; the operator key (weight 2) approves above-limit payments |
+
+Go-to-market: sell to Nigerian and Ghanaian agencies that pay East and Southern African freelancers, priced as a small percentage of payout volume. Cash-out from RLUSD to local money through a partner in each corridor is the integration point after the hackathon.
+
 ## How the limits are enforced
+
+![Architecture: the agent signs, the limits service or the operator adds the second signature the XRP Ledger requires](docs/architecture.svg)
 
 The treasury is an XRPL account holding RLUSD. Its signer list needs weight 2 for any transaction:
 
@@ -97,12 +130,13 @@ limits/    the independent co-signer: policy store, pure policy evaluator, appro
 agent/     tools (list_due_payments, pay_payee), Claude planner (Vercel AI SDK) and rules planner
 operator/  the operator dashboard (Next.js) and console: policy changes, approvals signed with the operator key
 scripts/   testnet setup, treasury top-up, ledger probes, operator CLI, refusal run, status, demo schedule
-tests/     policy, signature and money tests
+tests/     policy, approval, signature and money tests
+docs/      architecture diagram (SVG + PNG) and dashboard screenshot
 ```
 
 ## Status
 
-Built during the hackathon. Working now: testnet setup, the signer-list controls, the limits service, autonomous agent payments planned by Claude, the operator approvals queue, a reproducible refusal run, and the operator dashboard. Next: WhatsApp receipts, payee onboarding, and deployment.
+Built from scratch during the hackathon (first commit Nov 5 2026); no pre-existing code. Working now: testnet setup, the signer-list controls, the limits service, autonomous agent payments planned by Claude, the operator approvals queue, a reproducible refusal run, and the operator dashboard. Next: WhatsApp receipts, payee onboarding, and deployment.
 
 ## Libraries
 

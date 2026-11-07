@@ -10,6 +10,7 @@ const config: NextConfig = {
   serverExternalPackages: ['xrpl', 'ws', 'ripple-keypairs', 'ripple-binary-codec'],
   poweredByHeader: false,
   agentRules: false,
+  devIndicators: false,
 }
 
 export default config

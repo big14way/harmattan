@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1060" width="1600" height="1060" role="img" aria-label="Harmattan architecture: the agent signs, the limits service or the operator adds the second signature the XRP Ledger requires">
+<defs>
+<filter id="shadow" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="14" stdDeviation="14" flood-color="#302412" flood-opacity="0.08"/></filter>
+<marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0D0C0A"/></marker>
+<marker id="arrowbad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#B3261E"/></marker>
+</defs>
+<rect width="1600" height="1060" rx="24" fill="#FCFBF9"/>
+<text x="64" y="78" font-family="'JetBrains Mono', 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#6D6C6A" text-anchor="start" letter-spacing="1.8">HARMATTAN · ARCHITECTURE · XRP LEDGER TESTNET</text>
+<text x="64" y="124" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="34" font-weight="300" fill="#0D0C0A" text-anchor="start">Every treasury payment needs two signatures. The agent holds one.</text>
+<rect x="64" y="190" width="360" height="290" rx="16" fill="#FFFFFF" stroke="#EBE8E5" filter="url(#shadow)"/>
+<text x="88" y="226" font-family="'JetBrains Mono', 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#6D6C6A" text-anchor="start" letter-spacing="1.8">HUMAN SIDE</text>
+<text x="88" y="260" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="22" font-weight="400" fill="#0D0C0A" text-anchor="start">Operator dashboard</text>
+<text x="88" y="284" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#6D6C6A" text-anchor="start">Next.js · the agent has no access</text>
+<line x1="88" y1="306" x2="400" y2="306" stroke="#EBE8E5"/>
+<circle cx="97" cy="333" r="9" fill="#E8F3EC"/><path d="M93 333 l3 3 l5.5 -6" fill="none" stroke="#2E7D4F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="114" y="338" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#0D0C0A" text-anchor="start">Sets cap, daily budget, payees, pause</text>
+<circle cx="97" cy="365" r="9" fill="#E8F3EC"/><path d="M93 365 l3 3 l5.5 -6" fill="none" stroke="#2E7D4F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="114" y="370" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#0D0C0A" text-anchor="start">Approves payments above a limit</text>
+<circle cx="97" cy="397" r="9" fill="#E8F3EC"/><path d="M93 397 l3 3 l5.5 -6" fill="none" stroke="#2E7D4F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="114" y="402" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#0D0C0A" text-anchor="start">Decision log, explorer links, CSV</text>
+<rect x="88" y="435" width="195" height="26" rx="13" fill="#E9A23B"/>
+<circle cx="102" cy="448" r="3.8" fill="none" stroke="#2A1F0E" stroke-width="1.6"/><path d="M105.8 448 H115 M111.5 448 v3.2 M115 448 v3.8" stroke="#2A1F0E" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+<text x="121" y="452" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#2A1F0E" text-anchor="start">Operator key · weight 2</text>
+<rect x="64" y="570" width="360" height="300" rx="16" fill="#FFFFFF" stroke="#EBE8E5" filter="url(#shadow)"/>
+<text x="88" y="606" font-family="'JetBrains Mono', 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#6D6C6A" text-anchor="start" letter-spacing="1.8">AGENT</text>
+<text x="88" y="640" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="22" font-weight="400" fill="#0D0C0A" text-anchor="start">Treasury agent</text>
+<text x="88" y="664" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#6D6C6A" text-anchor="start">Claude Haiku 5.5 · Vercel AI SDK</text>
+<line x1="88" y1="686" x2="400" y2="686" stroke="#EBE8E5"/>
+<circle cx="97" cy="713" r="9" fill="#E8F3EC"/><path d="M93 713 l3 3 l5.5 -6" fill="none" stroke="#2E7D4F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="114" y="718" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#0D0C0A" text-anchor="start">Tools: list_due_payments, pay_payee</text>
+<circle cx="97" cy="745" r="9" fill="#E8F3EC"/><path d="M93 745 l3 3 l5.5 -6" fill="none" stroke="#2E7D4F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="114" y="750" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#0D0C0A" text-anchor="start">Runs on schedule or on instruction</text>
+<circle cx="97" cy="777" r="9" fill="#E8F3EC"/><path d="M93 777 l3 3 l5.5 -6" fill="none" stroke="#2E7D4F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="114" y="782" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#0D0C0A" text-anchor="start">Reads the policy, cannot change it</text>
+<circle cx="97" cy="809" r="9" fill="#E8F3EC"/><path d="M93 809 l3 3 l5.5 -6" fill="none" stroke="#2E7D4F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="114" y="814" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#0D0C0A" text-anchor="start">Holds no RLUSD</text>
+<rect x="88" y="833" width="172" height="26" rx="13" fill="#E9A23B"/>
+<circle cx="102" cy="846" r="3.8" fill="none" stroke="#2A1F0E" stroke-width="1.6"/><path d="M105.8 846 H115 M111.5 846 v3.2 M115 846 v3.8" stroke="#2A1F0E" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+<text x="121" y="850" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#2A1F0E" text-anchor="start">Agent key · weight 1</text>
+<rect x="620" y="190" width="360" height="680" rx="16" fill="#FFFFFF" stroke="#EBE8E5" filter="url(#shadow)"/>
+<text x="644" y="226" font-family="'JetBrains Mono', 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#6D6C6A" text-anchor="start" letter-spacing="1.8">INDEPENDENT CO-SIGNER</text>
+<text x="644" y="260" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="22" font-weight="400" fill="#0D0C0A" text-anchor="start">Limits service</text>
+<text x="644" y="284" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#6D6C6A" text-anchor="start">Separate process with its own key</text>
+<line x1="644" y1="306" x2="956" y2="306" stroke="#EBE8E5"/>
+<text x="644" y="336" font-family="'JetBrains Mono', 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#6D6C6A" text-anchor="start" letter-spacing="1.8">POLICY · OPERATOR WRITES, AGENT READS</text>
+<text x="644" y="366" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#0D0C0A" text-anchor="start">Per-payment cap</text>
+<text x="956" y="366" font-family="'JetBrains Mono', 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#6D6C6A" text-anchor="end">15 RLUSD</text>
+<text x="644" y="394" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#0D0C0A" text-anchor="start">Daily budget</text>
+<text x="956" y="394" font-family="'JetBrains Mono', 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#6D6C6A" text-anchor="end">50 RLUSD</text>
+<text x="644" y="422" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#0D0C0A" text-anchor="start">Per payee, per month</text>
+<text x="956" y="422" font-family="'JetBrains Mono', 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#6D6C6A" text-anchor="end">30 RLUSD</text>
+<text x="644" y="450" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#0D0C0A" text-anchor="start">Payee list</text>
+<text x="956" y="450" font-family="'JetBrains Mono', 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#6D6C6A" text-anchor="end">3 payees</text>
+<text x="644" y="478" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#0D0C0A" text-anchor="start">Pause switch</text>
+<text x="956" y="478" font-family="'JetBrains Mono', 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#6D6C6A" text-anchor="end">off</text>
+<line x1="644" y1="504" x2="956" y2="504" stroke="#EBE8E5"/>
+<text x="644" y="534" font-family="'JetBrains Mono', 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#6D6C6A" text-anchor="start" letter-spacing="1.8">CHECKS ON EVERY REQUEST</text>
+<circle cx="653" cy="561" r="9" fill="#E8F3EC"/><path d="M649 561 l3 3 l5.5 -6" fill="none" stroke="#2E7D4F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="670" y="566" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#0D0C0A" text-anchor="start">Plain RLUSD payment from the treasury</text>
+<circle cx="653" cy="593" r="9" fill="#E8F3EC"/><path d="M649 593 l3 3 l5.5 -6" fill="none" stroke="#2E7D4F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="670" y="598" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#0D0C0A" text-anchor="start">Signed by the agent, new payment id</text>
+<circle cx="653" cy="625" r="9" fill="#E8F3EC"/><path d="M649 625 l3 3 l5.5 -6" fill="none" stroke="#2E7D4F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="670" y="630" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#0D0C0A" text-anchor="start">Payee on the list and active</text>
+<circle cx="653" cy="657" r="9" fill="#E8F3EC"/><path d="M649 657 l3 3 l5.5 -6" fill="none" stroke="#2E7D4F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="670" y="662" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#0D0C0A" text-anchor="start">Under cap, budget and monthly limit</text>
+<line x1="644" y1="684" x2="956" y2="684" stroke="#EBE8E5"/>
+<text x="644" y="714" font-family="'JetBrains Mono', 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#6D6C6A" text-anchor="start" letter-spacing="1.8">RECORDS</text>
+<text x="644" y="744" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#0D0C0A" text-anchor="start">Decision log, refusals included</text>
+<text x="644" y="770" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#0D0C0A" text-anchor="start">Approvals queue for the operator</text>
+<rect x="644" y="833" width="180" height="26" rx="13" fill="#E9A23B"/>
+<circle cx="658" cy="846" r="3.8" fill="none" stroke="#2A1F0E" stroke-width="1.6"/><path d="M661.8 846 H671 M667.5 846 v3.2 M671 846 v3.8" stroke="#2A1F0E" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+<text x="677" y="850" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#2A1F0E" text-anchor="start">Limits key · weight 1</text>
+<rect x="1176" y="190" width="360" height="680" rx="16" fill="#F5F3EF" stroke="#EBE8E5"/>
+<text x="1200" y="226" font-family="'JetBrains Mono', 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#6D6C6A" text-anchor="start" letter-spacing="1.8">XRP LEDGER · TESTNET</text>
+<rect x="1196" y="250" width="320" height="300" rx="16" fill="#FFFFFF" stroke="#EBE8E5" filter="url(#shadow)"/>
+<text x="1220" y="288" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="20" font-weight="400" fill="#0D0C0A" text-anchor="start">Treasury account</text>
+<text x="1220" y="311" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#6D6C6A" text-anchor="start">holds RLUSD</text>
+<line x1="1220" y1="332" x2="1492" y2="332" stroke="#EBE8E5"/>
+<text x="1220" y="360" font-family="'JetBrains Mono', 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#6D6C6A" text-anchor="start" letter-spacing="1.8">SIGNER LIST</text>
+<text x="1220" y="392" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#0D0C0A" text-anchor="start">Agent</text>
+<text x="1492" y="392" font-family="'JetBrains Mono', 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#6D6C6A" text-anchor="end">weight 1</text>
+<text x="1220" y="422" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#0D0C0A" text-anchor="start">Limits service</text>
+<text x="1492" y="422" font-family="'JetBrains Mono', 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#6D6C6A" text-anchor="end">weight 1</text>
+<text x="1220" y="452" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#0D0C0A" text-anchor="start">Operator</text>
+<text x="1492" y="452" font-family="'JetBrains Mono', 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#6D6C6A" text-anchor="end">weight 2</text>
+<line x1="1220" y1="472" x2="1492" y2="472" stroke="#EBE8E5"/>
+<text x="1220" y="504" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#0D0C0A" text-anchor="start">Quorum</text>
+<text x="1492" y="504" font-family="'JetBrains Mono', 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#0D0C0A" text-anchor="end">2</text>
+<text x="1220" y="530" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#6D6C6A" text-anchor="start">enforced by the ledger itself</text>
+<line x1="1356.0" y1="552" x2="1356.0" y2="636" stroke="#0D0C0A" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text x="1370.0" y="590" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#0D0C0A" text-anchor="start">RLUSD Payment</text>
+<text x="1370.0" y="607" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#6D6C6A" text-anchor="start">with 2 of 2 weight</text>
+<rect x="1196" y="640" width="320" height="210" rx="16" fill="#FFFFFF" stroke="#EBE8E5" filter="url(#shadow)"/>
+<text x="1220" y="674" font-family="'JetBrains Mono', 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#6D6C6A" text-anchor="start" letter-spacing="1.8">PAYEES · OWN XRPL WALLETS</text>
+<text x="1220" y="708" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#0D0C0A" text-anchor="start">Wanjiru Kamau</text>
+<text x="1492" y="708" font-family="'JetBrains Mono', 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#6D6C6A" text-anchor="end">Nairobi</text>
+<text x="1220" y="738" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#0D0C0A" text-anchor="start">Okello Mugisha</text>
+<text x="1492" y="738" font-family="'JetBrains Mono', 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#6D6C6A" text-anchor="end">Kampala</text>
+<text x="1220" y="768" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#0D0C0A" text-anchor="start">Thandi Nkosi</text>
+<text x="1492" y="768" font-family="'JetBrains Mono', 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#6D6C6A" text-anchor="end">Cape Town</text>
+<text x="1220" y="808" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#6D6C6A" text-anchor="start">InvoiceID and memo tie each payment</text>
+<text x="1220" y="826" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#6D6C6A" text-anchor="start">to the request that made it</text>
+<line x1="428" y1="680" x2="614" y2="680" stroke="#0D0C0A" stroke-width="1.5" marker-end="url(#arrow)"/>
+<circle cx="521.0" cy="680" r="12" fill="#E9A23B" stroke="#FCFBF9" stroke-width="3"/>
+<text x="521.0" y="684.5" font-family="'JetBrains Mono', 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace" font-size="12.5" font-weight="500" fill="#2A1F0E" text-anchor="middle">1</text>
+<text x="521.0" y="714" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#0D0C0A" text-anchor="middle">signs a payment,</text>
+<text x="521.0" y="731" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#6D6C6A" text-anchor="middle">asks for a co-signature</text>
+<line x1="984" y1="400" x2="1190" y2="400" stroke="#0D0C0A" stroke-width="1.5" marker-end="url(#arrow)"/>
+<circle cx="1087.0" cy="400" r="12" fill="#E9A23B" stroke="#FCFBF9" stroke-width="3"/>
+<text x="1087.0" y="404.5" font-family="'JetBrains Mono', 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace" font-size="12.5" font-weight="500" fill="#2A1F0E" text-anchor="middle">2</text>
+<text x="1087.0" y="434" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#0D0C0A" text-anchor="middle">within policy: adds its</text>
+<text x="1087.0" y="451" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#6D6C6A" text-anchor="middle">signature and submits</text>
+<line x1="616" y1="300" x2="430" y2="300" stroke="#0D0C0A" stroke-width="1.5" marker-end="url(#arrow)"/>
+<circle cx="523.0" cy="300" r="12" fill="#E9A23B" stroke="#FCFBF9" stroke-width="3"/>
+<text x="523.0" y="304.5" font-family="'JetBrains Mono', 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace" font-size="12.5" font-weight="500" fill="#2A1F0E" text-anchor="middle">3</text>
+<text x="523.0" y="334" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#0D0C0A" text-anchor="middle">above a limit:</text>
+<text x="523.0" y="351" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#6D6C6A" text-anchor="middle">queued for the operator</text>
+<line x1="428" y1="420" x2="614" y2="420" stroke="#0D0C0A" stroke-width="1.5" marker-end="url(#arrow)"/>
+<circle cx="521.0" cy="420" r="12" fill="#E9A23B" stroke="#FCFBF9" stroke-width="3"/>
+<text x="521.0" y="424.5" font-family="'JetBrains Mono', 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace" font-size="12.5" font-weight="500" fill="#2A1F0E" text-anchor="middle">4</text>
+<text x="521.0" y="454" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#0D0C0A" text-anchor="middle">operator signs that exact</text>
+<text x="521.0" y="471" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#6D6C6A" text-anchor="middle">payment; limits submits it</text>
+<path d="M244.0 872 V940 H1356.0 V874" fill="none" stroke="#B3261E" stroke-width="1.5" stroke-dasharray="6 6" marker-end="url(#arrowbad)"/>
+<rect x="550.0" y="922" width="500" height="36" rx="18" fill="#FCFBF9"/>
+<text x="800.0" y="946" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#B3261E" text-anchor="middle">Agent alone (weight 1 of 2): the ledger rejects it, tefBAD_QUORUM</text>
+<text x="64" y="1012" font-family="'Inter Tight', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="400" fill="#6D6C6A" text-anchor="start">Refused requests never reach the ledger: the limits service logs them, and only the ones a human can authorise are queued for the operator.</text>
+</svg>

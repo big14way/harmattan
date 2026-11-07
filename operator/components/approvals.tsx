@@ -110,6 +110,31 @@ function ApprovalCard({ a, state, now, actions }: { a: Approval; state: Dashboar
   )
 }
 
+/** Shown beside a single pending approval: what the operator's signature actually does. */
+function WhatHappens({ a, state }: { a: Approval; state: DashboardState }) {
+  const name = (a.payeeId && state.view.policy.payees[a.payeeId]?.name) || shortAddress(a.destination)
+  const steps = [
+    `Your key signs one treasury payment: exactly ${money(a.cents)} to ${name}, bound to payment id ${a.paymentId}.`,
+    'The limits service checks that it matches this request, payee, amount and id, and that it was never paid.',
+    "The XRP Ledger accepts it because your key alone meets the treasury's quorum of 2.",
+    'It lands in the ledger log with its explorer link. It does not use up the agent\'s daily budget.',
+  ]
+  return (
+    <div className="hidden flex-col justify-center gap-6 px-2 lg:flex lg:px-10">
+      <p className="eyebrow">What happens when you approve</p>
+      <ol className="flex flex-col gap-5">
+        {steps.map((s, i) => (
+          <li key={i} className="flex gap-4">
+            <span className="num inline-flex size-7 shrink-0 items-center justify-center rounded-full bg-accent font-mono text-[12px] font-normal text-accent-ink">{i + 1}</span>
+            <p className="pt-0.5 text-[15px] leading-[23px] text-ink">{s}</p>
+          </li>
+        ))}
+      </ol>
+      <p className="text-[13px] leading-5 text-muted">Reject instead and nothing is sent. Either way the decision is logged.</p>
+    </div>
+  )
+}
+
 export function Approvals({ state, now, actions }: { state: DashboardState; now: number; actions: Actions }) {
   const pending = state.approvals.filter((a) => a.status === 'pending')
   const resolved = state.approvals.filter((a) => a.status !== 'pending').slice(0, 4)
@@ -127,6 +152,7 @@ export function Approvals({ state, now, actions }: { state: DashboardState; now:
           {pending.map((a) => (
             <ApprovalCard key={a.id} a={a} state={state} now={now} actions={actions} />
           ))}
+          {pending.length === 1 ? <WhatHappens a={pending[0]!} state={state} /> : null}
         </div>
       ) : (
         <div className="flex flex-col items-start gap-2 rounded-[16px] border border-dashed border-line-strong px-6 py-10 sm:items-center sm:text-center">
