@@ -2,6 +2,8 @@
 
 **The treasury agent your CFO would sign off on.**
 
+**Demo video (3 min):** https://youtu.be/LTQ--80td-0
+
 A Lagos agency paying contractors in Nairobi, Kampala and Cape Town spends a week and three bank portals on it every month. Harmattan is an AI agent that pays them in RLUSD on the XRP Ledger, on schedule. It can only move money inside limits that it does not control: the ledger refuses any treasury payment the agent signs alone.
 
 ![Operator dashboard: a 40 RLUSD payment above the 15 RLUSD cap waits for the operator's signature](docs/dashboard.png)
@@ -152,7 +154,7 @@ docs/      architecture diagram (SVG + PNG), dashboard screenshot, demo video co
 
 ## Status
 
-Built from scratch during the hackathon (first commit Nov 5 2026); no pre-existing code. Working now: testnet setup, the signer-list controls, the limits service, autonomous agent payments planned by Claude, the operator approvals queue, a reproducible refusal run, the operator dashboard with agent runs, WhatsApp receipts (sandbox or logged), payee onboarding and the payee page. Next: hosted deployment and the demo video.
+Built from scratch during the hackathon (first commit Nov 5 2026); no pre-existing code. Working now: testnet setup, the signer-list controls, the limits service, autonomous agent payments planned by Claude, the operator approvals queue, a reproducible refusal run, the operator dashboard with agent runs, WhatsApp receipts (sandbox or logged), payee onboarding and the payee page, and the demo video (https://youtu.be/LTQ--80td-0). Next: hosted deployment.
 
 ## Libraries
 
