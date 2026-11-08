@@ -3,6 +3,7 @@
 import { Fragment, useState, type ReactNode } from 'react'
 import { clock, money, relTime, shortAddress, toCentsSafe } from '@/lib/format'
 import type { DashboardState, RunRecord } from '@/lib/types'
+import { visitorRunBlock } from './dashboard'
 import { Button, ExternalLink, Icon, SectionHeader, Tag } from './ui'
 
 export interface RunControl {
@@ -164,7 +165,7 @@ export function Runs({ state, now, control }: { state: DashboardState; now: numb
               ))}
             </div>
           </fieldset>
-          <Button type="submit" variant="primary" disabled={control.running || !agent}>
+          <Button type="submit" variant="primary" disabled={control.running || !agent || Boolean(visitorRunBlock(state))}>
             <Icon name="play" />
             {control.running ? 'The agent is working…' : instruction.trim() ? 'Send to the agent' : "Run today's payouts"}
           </Button>

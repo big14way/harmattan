@@ -61,3 +61,40 @@ export async function rlusdReceived(address: string, opts: { from?: string; limi
   }
   return out
 }
+
+export interface SentPayment {
+  hash: string
+  at: string
+  cents: number
+  to: string
+}
+
+/**
+ * RLUSD an address paid to other accounts, read from the ledger (newest first). Its own currency
+ * swaps (top-ups: Destination is itself) are left out. Covers the latest `limit` transactions.
+ */
+export async function rlusdSent(address: string, opts: { limit?: number } = {}): Promise<SentPayment[]> {
+  const client = await getClient()
+  const asset = stablecoin()
+  let entries: RawEntry[]
+  try {
+    const res = await client.request({ command: 'account_tx', account: address, limit: opts.limit ?? 200, forward: false })
+    entries = res.result.transactions as unknown as RawEntry[]
+  } catch (err) {
+    if ((err as { data?: { error?: string } }).data?.error === 'actNotFound') return []
+    throw err
+  }
+  const out: SentPayment[] = []
+  for (const e of entries) {
+    const tx = e.tx_json ?? e.tx
+    if (!tx || tx.TransactionType !== 'Payment' || tx.Account !== address || tx.Destination === address) continue
+    const meta = typeof e.meta === 'object' ? e.meta : undefined
+    if (meta?.TransactionResult !== 'tesSUCCESS') continue
+    const delivered = meta.delivered_amount as { currency?: string; issuer?: string; value?: string } | string | undefined
+    if (!delivered || typeof delivered === 'string' || delivered.currency !== asset.currency || delivered.issuer !== asset.issuer) continue
+    const hash = e.hash ?? (tx.hash as string)
+    const at = e.close_time_iso ?? (typeof tx.date === 'number' ? rippleTimeToISOTime(tx.date) : '')
+    out.push({ hash, at, cents: toCents(Number(delivered.value).toFixed(2)), to: String(tx.Destination) })
+  }
+  return out
+}

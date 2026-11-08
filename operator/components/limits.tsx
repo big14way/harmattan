@@ -31,6 +31,7 @@ function AmountEditor({
   }, [current, focused])
   const dirty = value !== current
   const valid = AMOUNT.test(value)
+  const locked = !actions.operator
 
   return (
     <div className="flex flex-col rounded-[16px] border border-line bg-surface p-6">
@@ -39,7 +40,7 @@ function AmountEditor({
         className="mt-3 flex items-baseline gap-2"
         onSubmit={async (e) => {
           e.preventDefault()
-          if (!dirty || !valid) return
+          if (locked || !dirty || !valid) return
           await actions.run(async () => {
             await api('/api/policy', 'PUT', { [field]: value })
             return { tone: 'good', text: `${label} set to ${money(Math.round(Number(value) * 100))}. The limits service applies it to the next request.` }
@@ -49,14 +50,15 @@ function AmountEditor({
         <input
           aria-label={label}
           inputMode="decimal"
+          readOnly={locked}
           value={value}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           onChange={(e) => setValue(e.target.value.replace(/[^\d.]/g, ''))}
-          className="num min-w-[3ch] max-w-full border-b border-transparent bg-transparent text-[40px] [field-sizing:content] font-light leading-[44px] tracking-[-0.02em] text-ink outline-none hover:border-line focus:border-ink"
+          className={`num min-w-[3ch] max-w-full border-b border-transparent bg-transparent text-[40px] [field-sizing:content] font-light leading-[44px] tracking-[-0.02em] text-ink outline-none ${locked ? '' : 'hover:border-line focus:border-ink'}`}
         />
         <span className="label shrink-0">RLUSD</span>
-        {dirty ? (
+        {dirty && !locked ? (
           <Button type="submit" variant="primary" size="sm" disabled={!valid || actions.busy} className="ml-2 shrink-0">
             Save
           </Button>
@@ -83,7 +85,9 @@ function PauseSwitch({ paused, actions }: { paused: boolean; actions: Actions })
       <p className="label">Pause switch</p>
       <p className="mt-3 text-[28px] font-light leading-[44px] tracking-[-0.02em] text-ink">{paused ? 'Paused' : 'Agent can pay'}</p>
       <div className="mt-3">
-        {paused ? (
+        {!actions.operator ? (
+          <p className="text-[13px] leading-5 text-muted">Only the operator can pause or resume.</p>
+        ) : paused ? (
           <Button variant="primary" onClick={() => set(false)} disabled={actions.busy}>
             <Icon name="play" /> Resume payments
           </Button>
@@ -120,7 +124,11 @@ export function Limits({ state, actions }: { state: DashboardState; actions: Act
         index="04"
         eyebrow="Limits"
         title="Your limits"
-        lead="Changes go to the limits service, which the agent can read but not write. They apply to the very next request."
+        lead={
+          actions.operator
+            ? 'Changes go to the limits service, which the agent can read but not write. They apply to the very next request.'
+            : 'Set by the operator in the limits service, which the agent can read but not write. Read-only in the public demo.'
+        }
         right={<span className="font-mono text-[11px] font-light text-muted">Policy v{policy.version} · {policy.timezone}</span>}
       />
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">

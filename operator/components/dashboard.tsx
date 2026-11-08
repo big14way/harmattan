@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { money, shortAddress } from '@/lib/format'
-import type { DashboardState, RunRecord } from '@/lib/types'
+import { demoRunRefusal } from '@/lib/demo-rules'
+import type { DashboardState, DemoStatus, RunRecord } from '@/lib/types'
 import { AgentCard } from './agent-card'
 import { Approvals } from './approvals'
 import { Ledger } from './ledger'
@@ -21,6 +22,14 @@ export interface Toast {
 export interface Actions {
   run: (fn: () => Promise<Toast | void>) => Promise<boolean>
   busy: boolean
+  /** False for a public-demo visitor: limits, payees and invites are read-only. */
+  operator: boolean
+  demo: DemoStatus | null
+}
+
+/** Why a public-demo visitor cannot start a run right now, or null (always null for the operator). */
+export function visitorRunBlock(state: DashboardState): string | null {
+  return !state.viewer.operator && state.viewer.demo ? demoRunRefusal(state.viewer.demo) : null
 }
 
 export async function api<T = unknown>(path: string, method: string, body?: unknown): Promise<T> {
@@ -100,6 +109,35 @@ function TopBar({ state }: { state: DashboardState | null }) {
   )
 }
 
+function DemoBanner({ state }: { state: DashboardState }) {
+  const demo = state.viewer.demo
+  if (!demo) return null
+  const paid = demo.paidTodayCents === null ? 'the ledger could not be read just now' : `${money(demo.paidTodayCents)} paid today`
+  const allowance = `approvals up to ${money(demo.approvalMaxCents)}, at most ${money(demo.dailyCents)} a day from the treasury (${paid})`
+  if (state.viewer.operator) {
+    return (
+      <div className="border-b border-line bg-sunken">
+        <p className="mx-auto max-w-[1200px] px-4 py-2.5 text-[13px] leading-5 text-muted sm:px-8">
+          Signed in as the operator. The public demo is on: visitors can run the agent and approve payments, {allowance}. Limits, payees and invites are yours only.
+        </p>
+      </div>
+    )
+  }
+  return (
+    <div className="border-b border-accent/30 bg-accent/10">
+      <div className="mx-auto flex max-w-[1200px] flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-8">
+        <p className="text-[14px] leading-[21px] text-ink">
+          <span className="font-normal">Public demo on the XRP Ledger {state.network}.</span> You are the operator here: run today&apos;s payouts, approve the payment above the
+          cap, and tell the agent to pay a stranger. Every payment is a real testnet transaction. Limits and payees are read-only; {allowance}.
+        </p>
+        <a href="/signin" className="shrink-0 font-mono text-[12px] text-muted underline underline-offset-4 hover:text-ink">
+          Operator sign-in
+        </a>
+      </div>
+    </div>
+  )
+}
+
 function Stat({ label, value, sub, children }: { label: string; value: string; sub?: React.ReactNode; children?: React.ReactNode }) {
   return (
     <div className="flex min-w-0 flex-col gap-2 px-0 py-5 sm:px-6 sm:first:pl-0">
@@ -113,6 +151,7 @@ function Stat({ label, value, sub, children }: { label: string; value: string; s
 
 function Overview({ state, control }: { state: DashboardState; control: RunControl }) {
   const { view, approvals, decisions, treasury } = state
+  const blocked = visitorRunBlock(state)
   const pending = approvals.filter((a) => a.status === 'pending')
   const paidIds = new Set(decisions.filter((d) => d.outcome === 'cosigned').map((d) => d.paymentId))
   const stopped = decisions.filter((d) => d.day === view.today.day && d.outcome === 'refused' && !paidIds.has(d.paymentId))
@@ -142,7 +181,7 @@ function Overview({ state, control }: { state: DashboardState; control: RunContr
         <div className="mt-8 flex flex-wrap gap-3">
           <button
             onClick={() => void control.start()}
-            disabled={control.running || !state.agent}
+            disabled={control.running || !state.agent || Boolean(blocked)}
             className="inline-flex items-center gap-2 rounded-[6px] border border-accent bg-accent px-4 py-2.5 text-[14px] font-normal text-accent-ink hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Icon name="play" /> {control.running ? 'The agent is working…' : "Run today's payouts"}
@@ -151,6 +190,7 @@ function Overview({ state, control }: { state: DashboardState; control: RunContr
             Give the agent an instruction
           </a>
         </div>
+        {blocked ? <p className="mt-3 max-w-[680px] text-[13px] leading-5 text-warn">{blocked}</p> : null}
 
         <div className="mt-10 grid grid-cols-1 divide-y divide-line border-y border-line sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-4 lg:divide-x">
           <Stat
@@ -262,9 +302,13 @@ export function Dashboard() {
     },
   }
 
+  const operator = state?.viewer.operator ?? false
+  const demo = state?.viewer.demo ?? null
   const actions: Actions = useMemo(
     () => ({
       busy,
+      operator,
+      demo,
       run: async (fn) => {
         setBusy(true)
         try {
@@ -280,12 +324,13 @@ export function Dashboard() {
         }
       },
     }),
-    [busy, load],
+    [busy, load, operator, demo],
   )
 
   return (
     <div className="min-h-screen">
       <TopBar state={state} />
+      {state ? <DemoBanner state={state} /> : null}
       {!state && error ? <ErrorState message={error} retry={() => void load()} /> : null}
       {!state && !error ? <LoadingState /> : null}
       {state ? (

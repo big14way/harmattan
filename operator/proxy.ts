@@ -1,29 +1,30 @@
 import { NextResponse, type NextRequest } from 'next/server'
+import { dashboardPassword, isOperator, publicDemo } from '@/lib/access'
 
 /**
  * When HARMATTAN_DASHBOARD_PASSWORD is set (any hosted deployment), the operator console needs it
- * (HTTP basic auth, any user name). Payee pages and invite links stay public: they show one
- * payee's own data and can only add an inactive payee.
+ * (HTTP basic auth at /signin, any user name). Payee pages and invite links stay public: they show
+ * one payee's own data and can only add an inactive payee.
  */
 const PUBLIC = [/^\/join\//, /^\/p\//, /^\/api\/join\//, /^\/api\/health$/, /^\/icon\.svg$/]
 
-function same(a: string, b: string): boolean {
-  if (a.length !== b.length) return false
-  let diff = 0
-  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i)
-  return diff === 0
-}
+/**
+ * With HARMATTAN_PUBLIC_DEMO=1, visitors can also open the console and run the demo. Limits,
+ * payees and invites stay operator-only; the run and approval routes apply the demo's limits.
+ */
+const DEMO: Array<[string, RegExp]> = [
+  ['GET', /^\/$/],
+  ['GET', /^\/api\/state$/],
+  ['GET', /^\/api\/ledger\.csv$/],
+  ['POST', /^\/api\/run$/],
+  ['POST', /^\/api\/approvals\/[^/]+$/],
+]
 
-export function proxy(req: NextRequest) {
-  const password = process.env.HARMATTAN_DASHBOARD_PASSWORD
-  if (!password || PUBLIC.some((r) => r.test(req.nextUrl.pathname))) return NextResponse.next()
-  const [scheme, encoded] = (req.headers.get('authorization') ?? '').split(' ')
-  if (scheme === 'Basic' && encoded) {
-    try {
-      const decoded = atob(encoded)
-      if (same(decoded.slice(decoded.indexOf(':') + 1), password)) return NextResponse.next()
-    } catch {}
-  }
+export async function proxy(req: NextRequest) {
+  const path = req.nextUrl.pathname
+  if (!dashboardPassword() || PUBLIC.some((r) => r.test(path))) return NextResponse.next()
+  if (await isOperator(req.headers)) return NextResponse.next()
+  if (publicDemo() && DEMO.some(([method, r]) => method === req.method && r.test(path))) return NextResponse.next()
   return new NextResponse('Operator sign-in required', { status: 401, headers: { 'WWW-Authenticate': 'Basic realm="Harmattan operator", charset="UTF-8"' } })
 }
 

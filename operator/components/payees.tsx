@@ -45,6 +45,18 @@ function MonthlyLimit({ p, spent, actions }: { p: PayeePolicy; spent: number; ac
       </form>
     )
   }
+  if (!actions.operator) {
+    return (
+      <div className="flex w-full flex-col items-end gap-1.5 text-right">
+        <span className="num whitespace-nowrap text-[15px] text-ink">
+          {money(spent, { symbol: false })} <span className="text-muted">/ {money(p.monthlyLimitCents, { symbol: false })}</span>
+        </span>
+        <span className="h-1 w-24 overflow-hidden rounded-full bg-sunken sm:w-32">
+          <span className={`block h-full rounded-full ${pct >= 100 ? 'bg-warn' : 'bg-ink'}`} style={{ width: `${pct}%` }} />
+        </span>
+      </div>
+    )
+  }
   return (
     <button className="group flex w-full flex-col items-end gap-1.5 text-right" onClick={() => setEditing(true)} title="Change monthly limit">
       <span className="num whitespace-nowrap text-[15px] text-ink">
@@ -61,6 +73,7 @@ function MonthlyLimit({ p, spent, actions }: { p: PayeePolicy; spent: number; ac
 function PhoneEditor({ p, actions }: { p: PayeePolicy; actions: Actions }) {
   const [editing, setEditing] = useState(false)
   const [value, setValue] = useState(p.phone ?? '')
+  if (!actions.operator) return p.phone ? <p className="text-[12px] leading-[18px] text-muted">WhatsApp {p.phone}</p> : null
   if (!editing) {
     return (
       <button className="text-left text-[12px] leading-[18px] text-muted underline-offset-4 hover:text-ink hover:underline" onClick={() => setEditing(true)}>
@@ -101,6 +114,13 @@ function PhoneEditor({ p, actions }: { p: PayeePolicy; actions: Actions }) {
 
 function StatusCell({ p, actions }: { p: PayeePolicy; actions: Actions }) {
   const [confirming, setConfirming] = useState(false)
+  if (!actions.operator) {
+    return (
+      <div className="flex flex-col items-end gap-1.5">
+        {p.pendingConfirmation ? <Tag tone="warn">New address</Tag> : p.active ? <Tag tone="good">Active</Tag> : <Tag tone="neutral">Switched off</Tag>}
+      </div>
+    )
+  }
   if (p.pendingConfirmation) {
     return confirming ? (
       <div className="flex max-w-[260px] flex-col items-end gap-2 text-right">
@@ -328,7 +348,11 @@ export function Payees({ state, actions }: { state: DashboardState; actions: Act
           </tbody>
         </table>
       </div>
-      <InvitePanel state={state} actions={actions} />
+      {actions.operator ? (
+        <InvitePanel state={state} actions={actions} />
+      ) : (
+        <p className="mt-4 text-[13px] leading-5 text-muted">Read-only in the public demo: only the operator adds payees, changes their limits or switches them on.</p>
+      )}
     </section>
   )
 }

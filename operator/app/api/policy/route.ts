@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { toCents } from '../../../../ledger/src/money.ts'
 import type { PolicyUpdate } from '../../../../limits/src/policy.ts'
+import { isOperator } from '@/lib/access'
 import { operator } from '@/lib/state'
 
 export const dynamic = 'force-dynamic'
@@ -24,6 +25,7 @@ const Body = z.object({
 
 /** The operator changes limits here; the dashboard server holds the operator token, the browser never does. */
 export async function PUT(req: Request) {
+  if (!(await isOperator(req.headers))) return Response.json({ error: 'Operator sign-in required' }, { status: 401 })
   try {
     const body = Body.parse(await req.json())
     const op = operator()

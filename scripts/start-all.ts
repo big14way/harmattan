@@ -25,6 +25,7 @@ const internal = { LIMITS_URL: `http://127.0.0.1:${LIMITS_PORT}`, AGENT_URL: `ht
 
 const SHARED = ['PATH', 'HOME', 'NODE_ENV', 'TZ', 'XRPL_NETWORK', 'HARMATTAN_DATA_DIR', 'HARMATTAN_COMPANY_NAME', 'HARMATTAN_PUBLIC_URL', 'RENDER_EXTERNAL_URL']
 const RECEIPTS = ['TWILIO_ACCOUNT_SID', 'TWILIO_AUTH_TOKEN', 'TWILIO_WHATSAPP_FROM', 'HARMATTAN_OPERATOR_WHATSAPP']
+const PUBLIC_DEMO = ['HARMATTAN_PUBLIC_DEMO', 'HARMATTAN_PUBLIC_APPROVAL_MAX', 'HARMATTAN_PUBLIC_DAILY_RLUSD']
 
 function envFor(keys: string[], extra: Record<string, string>): NodeJS.ProcessEnv {
   const env: NodeJS.ProcessEnv = {}
@@ -55,7 +56,7 @@ const roles: Array<{ name: string; cmd: string[]; env: NodeJS.ProcessEnv }> = [
   {
     name: 'dashboard',
     cmd: ['node', ...LEAN, 'node_modules/next/dist/bin/next', 'start', '-p', PORT, '-H', '0.0.0.0'],
-    env: envFor(['HARMATTAN_OPERATOR_SEED', 'HARMATTAN_OPERATOR_TOKEN', 'HARMATTAN_AGENT_TRIGGER_TOKEN', 'HARMATTAN_DASHBOARD_PASSWORD', ...RECEIPTS], { ...internal, PORT }),
+    env: envFor(['HARMATTAN_OPERATOR_SEED', 'HARMATTAN_OPERATOR_TOKEN', 'HARMATTAN_AGENT_TRIGGER_TOKEN', 'HARMATTAN_DASHBOARD_PASSWORD', ...PUBLIC_DEMO, ...RECEIPTS], { ...internal, PORT }),
   },
 ]
 

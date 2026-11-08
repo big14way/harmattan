@@ -6,7 +6,8 @@ import type { RunRecord } from '../../agent/src/runner.ts'
 import { readReceipts, twilioConfigured } from '../../receipts/src/index.ts'
 import { OperatorConsole } from './console.ts'
 import { loadInvites } from './invites.ts'
-import type { AgentStatus, DashboardState } from './types.ts'
+import { maskPhone } from './demo-rules.ts'
+import type { AgentStatus, DashboardState, Viewer } from './types.ts'
 
 let console_: OperatorConsole | null = null
 export function operator(): OperatorConsole {
@@ -52,7 +53,7 @@ export function invalidateBalances(): void {
   balanceCache = null
 }
 
-export async function dashboardState(): Promise<DashboardState> {
+export async function dashboardState(viewer: Viewer): Promise<DashboardState> {
   const op = operator()
   const deployment = readDeployment()
   const treasury = deployment.accounts.treasury
@@ -79,5 +80,19 @@ export async function dashboardState(): Promise<DashboardState> {
     whatsapp: twilioConfigured(),
     invites: loadInvites().filter((i) => i.status === 'open').reverse(),
     strangerAddress: Wallet.generate().classicAddress,
+    viewer,
+  }
+}
+
+/** What a public-demo visitor sees: no invite links (each one can add a payee), no phone numbers. */
+export function publicView(state: DashboardState): DashboardState {
+  const payees = Object.fromEntries(
+    Object.entries(state.view.policy.payees).map(([id, p]) => [id, p.phone ? { ...p, phone: maskPhone(p.phone) ?? undefined } : p]),
+  )
+  return {
+    ...state,
+    view: { ...state.view, policy: { ...state.view.policy, payees } },
+    receipts: state.receipts.map((r) => ({ ...r, to: maskPhone(r.to) })),
+    invites: [],
   }
 }

@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { toCents } from '../../../../ledger/src/money.ts'
+import { isOperator } from '@/lib/access'
 import { createInvite } from '@/lib/invites'
 
 export const dynamic = 'force-dynamic'
@@ -20,6 +21,7 @@ const Body = z.object({
 
 /** Operator creates an onboarding link for a new payee. */
 export async function POST(req: Request) {
+  if (!(await isOperator(req.headers))) return Response.json({ error: 'Operator sign-in required' }, { status: 401 })
   try {
     const b = Body.parse(await req.json())
     const invite = createInvite({ name: b.name, city: b.city, country: b.country.toUpperCase(), phone: b.phone, monthlyLimitCents: toCents(b.monthly) })

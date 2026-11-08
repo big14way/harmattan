@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { clock, COUNTRY, money, relTime, shortAddress } from '@/lib/format'
 import type { Approval, DashboardState } from '@/lib/types'
+import { demoApproveRefusal } from '@/lib/demo-rules'
 import { api, type Actions } from './dashboard'
 import { Avatar, Button, ExternalLink, Glyph, Icon, SectionHeader, Tag, ToneIcon } from './ui'
 
@@ -17,6 +18,8 @@ function ApprovalCard({ a, state, now, actions }: { a: Approval; state: Dashboar
   const payee = a.payeeId ? state.view.policy.payees[a.payeeId] : undefined
   const name = payee?.name ?? 'Unknown address'
   const operatorAddr = state.view.signers.operator
+  // A public-demo visitor approves only within the demo's limits; the server checks the same rule.
+  const blocked = !actions.operator && actions.demo ? demoApproveRefusal(actions.demo, a.cents) : null
 
   const checks: Array<{ tone: 'good' | 'warn'; text: string }> = [
     { tone: 'good', text: payee ? `${payee.name} is on your payee list` : 'Address checked against your payee list' },
@@ -76,6 +79,7 @@ function ApprovalCard({ a, state, now, actions }: { a: Approval; state: Dashboar
 
       <div className="mt-auto px-6 pb-6 pt-6">
         {a.lastError ? <p className="mb-3 rounded-[8px] bg-bad-bg px-3 py-2 text-[13px] text-bad">Last attempt failed: {a.lastError}</p> : null}
+        {blocked ? <p className="mb-3 rounded-[8px] bg-warn-bg px-3 py-2 text-[13px] text-warn">{blocked}</p> : null}
         {confirmReject ? (
           <div className="flex flex-col gap-3 rounded-[10px] bg-sunken p-4">
             <p className="text-[14px] leading-5 text-ink">
@@ -92,7 +96,7 @@ function ApprovalCard({ a, state, now, actions }: { a: Approval; state: Dashboar
           </div>
         ) : (
           <div className="flex flex-col gap-2 sm:flex-row">
-            <Button variant="primary" className="flex-1" onClick={approve} disabled={actions.busy}>
+            <Button variant="primary" className="flex-1" onClick={approve} disabled={actions.busy || Boolean(blocked)}>
               <Icon name="key" />
               {working === 'approve' ? 'Signing with your key…' : `Approve and pay ${money(a.cents)}`}
             </Button>

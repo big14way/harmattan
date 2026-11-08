@@ -14,6 +14,9 @@ services:
       # The free instance's disk is wiped on restart and sleep: put the demo payouts back on wake.
       - key: HARMATTAN_DEMO_SCHEDULE
         value: demo
+      # Visitors can run the demo; limits, payees and invites need the dashboard password.
+      - key: HARMATTAN_PUBLIC_DEMO
+        value: "1"
       - key: HARMATTAN_DASHBOARD_PASSWORD
         sync: false
       - key: HARMATTAN_AGENT_SEED
