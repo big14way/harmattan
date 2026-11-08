@@ -9,6 +9,21 @@ import { operator } from '@/lib/state'
 export const dynamic = 'force-dynamic'
 export const metadata: Metadata = { title: 'Your payments · Harmattan', robots: { index: false } }
 
+/** A testnet read can fail on a busy public node; try again before telling the payee it failed. */
+async function withRetry<T>(what: string, fn: () => Promise<T>, tries = 3): Promise<T> {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      return await fn()
+    } catch (err) {
+      if (attempt >= tries) {
+        console.warn(`[payee page] ${what} failed after ${tries} tries: ${(err as Error).message}`)
+        throw err
+      }
+      await new Promise((r) => setTimeout(r, 700 * attempt))
+    }
+  }
+}
+
 /**
  * Public payee view: balance and payments received from the treasury, read from the XRP Ledger.
  * Shows nothing about other payees or the operator's policy.
@@ -30,7 +45,13 @@ export default async function PayeePage({ params }: { params: Promise<{ id: stri
     )
   }
 
-  const [balance, received] = await Promise.all([rlusdBalance(address).catch(() => '0'), rlusdReceived(address, { from: treasury }).catch(() => [])])
+  const [balanceRead, receivedRead] = await Promise.allSettled([
+    withRetry('balance read', () => rlusdBalance(address)),
+    withRetry('payment history read', () => rlusdReceived(address, { from: treasury })),
+  ])
+  const balance = balanceRead.status === 'fulfilled' ? balanceRead.value : null
+  const received = receivedRead.status === 'fulfilled' ? receivedRead.value : []
+  const historyFailed = receivedRead.status === 'rejected'
   const total = received.reduce((s, r) => s + r.cents, 0)
   const tz = policy.timezone
 
@@ -57,11 +78,15 @@ export default async function PayeePage({ params }: { params: Promise<{ id: stri
 
         <p className="label mt-10">In your wallet</p>
         <p className="num mt-2 text-[56px] font-light leading-[1] tracking-[-0.03em]">
-          {money(toCents(Number(balance).toFixed(2)), { symbol: false })}
+          {balance === null ? '—' : money(toCents(Number(balance).toFixed(2)), { symbol: false })}
           <span className="ml-2 align-middle font-mono text-[14px] font-light tracking-[0.12em] text-muted">RLUSD</span>
         </p>
         <p className="mt-3 text-[14px] text-muted">
-          {received.length ? `${money(total)} received from ${company} in ${received.length} payment${received.length > 1 ? 's' : ''}.` : `No payments from ${company} yet.`}{' '}
+          {historyFailed
+            ? 'Couldn’t reach the XRP Ledger just now. This page tries again every few seconds.'
+            : received.length
+              ? `${money(total)} received from ${company} in ${received.length} payment${received.length > 1 ? 's' : ''}.`
+              : `No payments from ${company} yet.`}{' '}
           <ExternalLink href={`${network().explorer}/accounts/${address}`} className="text-muted">
             {shortAddress(address)}
           </ExternalLink>
@@ -88,6 +113,8 @@ export default async function PayeePage({ params }: { params: Promise<{ id: stri
               </li>
             ))}
           </ul>
+        ) : historyFailed ? (
+          <p className="rounded-[12px] bg-warn-bg px-4 py-8 text-center text-[14px] text-warn">Couldn’t read your payments from the ledger just now. Trying again.</p>
         ) : (
           <p className="rounded-[12px] border border-dashed border-line-strong px-4 py-8 text-center text-[14px] text-muted">Payments will appear here as they land on the ledger.</p>
         )}

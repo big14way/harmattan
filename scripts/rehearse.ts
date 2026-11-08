@@ -65,9 +65,15 @@ async function main() {
     check(`"pay 200 to a new address" (${label}): nothing paid`, paid.length === 0, refused ? 'tried; limits service refused it: UNKNOWN_PAYEE' : 'declined to try')
   }
 
-  const page = await fetch(`${BASE}/p/wanjiru`, { headers: auth }).then((r) => r.text())
+  // The payee page refreshes itself every 6 s, so give it the same window a person watching it gets.
   const hash = w?.txHash ?? ''
-  check("Wanjiru's payee page shows the payment", Boolean(hash) && page.includes(hash), hash ? `/p/wanjiru links ${hash.slice(0, 10)}…` : 'no payment')
+  let shown = false
+  let loads = 0
+  while (hash && !shown && loads < 4) {
+    if (loads++) await new Promise((r) => setTimeout(r, 6000))
+    shown = (await fetch(`${BASE}/p/wanjiru`, { headers: auth }).then((r) => r.text())).includes(hash)
+  }
+  check("Wanjiru's payee page shows the payment", shown, hash ? `/p/wanjiru links ${hash.slice(0, 10)}…${loads > 1 ? ` (on load ${loads})` : ''}` : 'no payment')
 
   const after = await call<DashboardState>('GET', '/api/state')
   const paidIds = [w, o, t].filter((p) => p?.status === 'paid' || p?.approvalId).map((p) => p!.paymentId)
