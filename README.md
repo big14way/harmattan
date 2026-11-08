@@ -4,6 +4,8 @@
 
 **Demo video (3 min):** https://youtu.be/LTQ--80td-0
 
+**Live on XRPL Testnet:** [Wanjiru's payee page](https://harmattan.onrender.com/p/wanjiru), read live from the ledger. The operator console at https://harmattan.onrender.com needs the operator password. Free hosting sleeps when idle, so the first load can take up to a minute.
+
 A Lagos agency paying contractors in Nairobi, Kampala and Cape Town spends a week and three bank portals on it every month. Harmattan is an AI agent that pays them in RLUSD on the XRP Ledger, on schedule. It can only move money inside limits that it does not control: the ledger refuses any treasury payment the agent signs alone.
 
 ![Operator dashboard: a 40 RLUSD payment above the 15 RLUSD cap waits for the operator's signature](docs/dashboard.png)
@@ -137,7 +139,7 @@ PASS  agent bypasses the limits service  tefBAD_QUORUM      submitted straight t
 
 ## Deploy
 
-[`render.yaml`](render.yaml) deploys one free Render web service from the [`Dockerfile`](Dockerfile): `scripts/start-all.ts` runs the limits service, the agent service and the dashboard in one container and hands each process only the secrets its role needs. Set the agent, limits and operator testnet seeds, a dashboard password and (optionally) `ANTHROPIC_API_KEY` and the Twilio sandbox values in Render. The treasury key is never deployed. Within one container this separates the roles by process, not by machine (they share a user, and the supervisor starts with every secret); a production deployment runs the three as separate services. The free tier keeps the decision log on an ephemeral disk, so it starts fresh after a restart or sleep; payments themselves are always on the ledger. With `HARMATTAN_DEMO_SCHEDULE=demo` (set in the blueprint) each fresh start puts today's three demo payouts back on the schedule; nothing is paid until the operator runs them. Node runs the TypeScript directly, so the three roles fit the free tier's 512 MB.
+Live at https://harmattan.onrender.com: the operator console needs the operator password; payee pages such as [/p/wanjiru](https://harmattan.onrender.com/p/wanjiru) are public. [`render.yaml`](render.yaml) deploys one free Render web service from the [`Dockerfile`](Dockerfile): `scripts/start-all.ts` runs the limits service, the agent service and the dashboard in one container and hands each process only the secrets its role needs. Set the agent, limits and operator testnet seeds, a dashboard password and (optionally) `ANTHROPIC_API_KEY` and the Twilio sandbox values in Render. The treasury key is never deployed. Within one container this separates the roles by process, not by machine (they share a user, and the supervisor starts with every secret); a production deployment runs the three as separate services. The free tier keeps the decision log on an ephemeral disk, so it starts fresh after a restart or sleep; payments themselves are always on the ledger. With `HARMATTAN_DEMO_SCHEDULE=demo` (set in the blueprint) each fresh start puts today's three demo payouts back on the schedule; nothing is paid until the operator runs them. Node runs the TypeScript directly, so the three roles fit the free tier's 512 MB.
 
 ## Layout
 
@@ -154,7 +156,7 @@ docs/      architecture diagram (SVG + PNG), dashboard screenshot, demo video co
 
 ## Status
 
-Built from scratch during the hackathon (first commit Nov 5 2026); no pre-existing code. Working now: testnet setup, the signer-list controls, the limits service, autonomous agent payments planned by Claude, the operator approvals queue, a reproducible refusal run, the operator dashboard with agent runs, WhatsApp receipts (sandbox or logged), payee onboarding and the payee page, and the demo video (https://youtu.be/LTQ--80td-0). Next: hosted deployment.
+Built from scratch during the hackathon (first commit Nov 5 2026); no pre-existing code. Working now: testnet setup, the signer-list controls, the limits service, autonomous agent payments planned by Claude, the operator approvals queue, a reproducible refusal run, the operator dashboard with agent runs, WhatsApp receipts (sandbox or logged), payee onboarding and the payee page, the demo video (https://youtu.be/LTQ--80td-0) and the hosted demo (https://harmattan.onrender.com).
 
 ## Libraries
 
