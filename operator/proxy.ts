@@ -18,6 +18,7 @@ const DEMO: Array<[string, RegExp]> = [
   ['GET', /^\/api\/ledger\.csv$/],
   ['POST', /^\/api\/run$/],
   ['POST', /^\/api\/approvals\/[^/]+$/],
+  ['POST', /^\/api\/schedule\/demo$/],
 ]
 
 export async function proxy(req: NextRequest) {

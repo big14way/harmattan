@@ -7,6 +7,7 @@ import { readReceipts, twilioConfigured } from '../../receipts/src/index.ts'
 import { OperatorConsole } from './console.ts'
 import { loadInvites } from './invites.ts'
 import { maskPhone } from './demo-rules.ts'
+import { demoSchedule } from './demo.ts'
 import type { AgentStatus, DashboardState, Viewer } from './types.ts'
 
 let console_: OperatorConsole | null = null
@@ -81,6 +82,7 @@ export async function dashboardState(viewer: Viewer): Promise<DashboardState> {
     invites: loadInvites().filter((i) => i.status === 'open').reverse(),
     strangerAddress: Wallet.generate().classicAddress,
     viewer,
+    demoSchedule: demoSchedule(),
   }
 }
 

@@ -1,8 +1,11 @@
 import 'server-only'
 import { readDeployment, rlusdSent, toCents } from '../../ledger/src/index.ts'
 import { calendarKeys } from '../../limits/src/decisions.ts'
-import { demoRunRefusal } from './demo-rules.ts'
-import type { DemoStatus } from './types.ts'
+import { loadPayables, type Payable } from '../../agent/src/payables.ts'
+import { SCENARIOS, scenarioTotalCents, seedScenario } from '../../scripts/demo-schedule.ts'
+import type { OperatorConsole } from './console.ts'
+import { demoRescheduleRefusal, demoRunRefusal } from './demo-rules.ts'
+import type { DemoSchedule, DemoStatus } from './types.ts'
 
 const APPROVAL_MAX_CENTS = toCents(process.env.HARMATTAN_PUBLIC_APPROVAL_MAX ?? '40')
 /** Two full demos a day: each pays 12.00 and 9.50 inside the limits and 40.00 after approval. */
@@ -59,4 +62,32 @@ export async function takeDemoRun(timezone: string): Promise<string | null> {
   runsByDay.clear() // only today's count matters
   runsByDay.set(day, count)
   return null
+}
+
+/** The demo payouts this deployment schedules on boot (HARMATTAN_DEMO_SCHEDULE), or null. */
+export function demoSchedule(): DemoSchedule | null {
+  const name = process.env.HARMATTAN_DEMO_SCHEDULE
+  const items = name ? SCENARIOS[name] : undefined
+  return name && items ? { name, count: items.length, totalCents: scenarioTotalCents(name) } : null
+}
+
+/**
+ * Puts the demo payouts back on today's schedule once the last demo is finished, so the next
+ * person can run it from the start. Returns the payouts added, or why not.
+ */
+export async function rescheduleDemo(op: OperatorConsole, asOperator: boolean): Promise<{ added: Payable[] } | { refusal: string; status: number }> {
+  const schedule = demoSchedule()
+  if (!schedule) return { refusal: 'This deployment has no demo schedule.', status: 404 }
+  const [view, approvals] = await Promise.all([op.view(), op.approvals()])
+  const demo = asOperator ? null : await demoStatus(view.policy.timezone)
+  // Nothing awaits from here on, so two people clicking at once cannot both add the payouts.
+  const today = calendarKeys(new Date(), view.policy.timezone).day
+  const check = {
+    dueCount: loadPayables().filter((p) => p.status === 'scheduled' && p.dueDate <= today).length,
+    pendingCount: approvals.filter((a) => a.status === 'pending').length,
+    totalCents: schedule.totalCents,
+  }
+  const refusal = demoRescheduleRefusal(check, demo)
+  if (refusal) return { refusal, status: 409 }
+  return { added: seedScenario(schedule.name, Date.now().toString(36).slice(-5), view.policy.timezone) }
 }

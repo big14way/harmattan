@@ -12,6 +12,7 @@
  * HARMATTAN_DEMO_SCHEDULE=demo puts today's demo payouts on the schedule when the schedule is
  * empty. A free host wipes the disk on every restart and sleep, so the hosted demo would otherwise
  * wake up with nothing to pay. This only writes the schedule; nothing is paid until someone runs it.
+ * The dashboard gets it too, to offer "Run the demo again" once a demo is finished.
  */
 import { spawn, spawnSync, type ChildProcess } from 'node:child_process'
 
@@ -56,7 +57,7 @@ const roles: Array<{ name: string; cmd: string[]; env: NodeJS.ProcessEnv }> = [
   {
     name: 'dashboard',
     cmd: ['node', ...LEAN, 'node_modules/next/dist/bin/next', 'start', '-p', PORT, '-H', '0.0.0.0'],
-    env: envFor(['HARMATTAN_OPERATOR_SEED', 'HARMATTAN_OPERATOR_TOKEN', 'HARMATTAN_AGENT_TRIGGER_TOKEN', 'HARMATTAN_DASHBOARD_PASSWORD', ...PUBLIC_DEMO, ...RECEIPTS], { ...internal, PORT }),
+    env: envFor(['HARMATTAN_OPERATOR_SEED', 'HARMATTAN_OPERATOR_TOKEN', 'HARMATTAN_AGENT_TRIGGER_TOKEN', 'HARMATTAN_DASHBOARD_PASSWORD', 'HARMATTAN_DEMO_SCHEDULE', ...PUBLIC_DEMO, ...RECEIPTS], { ...internal, PORT }),
   },
 ]
 

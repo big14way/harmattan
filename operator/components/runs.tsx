@@ -9,6 +9,8 @@ import { Button, ExternalLink, Icon, SectionHeader, Tag } from './ui'
 export interface RunControl {
   running: boolean
   start: (instruction?: string, planner?: 'claude' | 'rules') => Promise<void>
+  /** Demo deployments: put the demo payouts back on today's schedule and run the agent on them. */
+  again: () => Promise<void>
 }
 
 /** Minimal rendering of the agent's plain-text report: bullets, **bold**, and links. */

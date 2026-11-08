@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { basicAuthMatches, isOperator, OPERATOR_COOKIE, operatorCookieValue, publicDemo } from '../operator/lib/access.ts'
-import { demoApproveRefusal, demoRunRefusal, maskPhone } from '../operator/lib/demo-rules.ts'
+import { demoApproveRefusal, demoRescheduleRefusal, demoRunRefusal, maskPhone } from '../operator/lib/demo-rules.ts'
 import type { DemoStatus } from '../operator/lib/types.ts'
 
 const basic = (user: string, pass: string) => `Basic ${btoa(`${user}:${pass}`)}`
@@ -69,6 +69,19 @@ describe('public demo limits', () => {
     expect(demoApproveRefusal(status({ paidTodayCents: 8301 }), 4000)).toMatch(/past its daily limit/)
     expect(demoApproveRefusal(status({ paidTodayCents: 8300 }), 4000)).toBeNull()
     expect(demoApproveRefusal(status({ paidTodayCents: null }), 1000)).toMatch(/could not read/)
+  })
+
+  it('puts the demo payouts back only once the last demo is finished, and within the daily limit', () => {
+    const done = { dueCount: 0, pendingCount: 0, totalCents: 6150 }
+    expect(demoRescheduleRefusal({ ...done, dueCount: 3 }, null)).toMatch(/already on the schedule/)
+    expect(demoRescheduleRefusal({ ...done, pendingCount: 1 }, null)).toMatch(/waiting for a signature/)
+    // The operator is not held to the visitor allowance.
+    expect(demoRescheduleRefusal(done, null)).toBeNull()
+    expect(demoRescheduleRefusal(done, status())).toBeNull()
+    expect(demoRescheduleRefusal(done, status({ paidTodayCents: 6150 }))).toBeNull()
+    expect(demoRescheduleRefusal(done, status({ paidTodayCents: 6151 }))).toMatch(/Another demo moves 61\.50 RLUSD.*daily limit of 123\.00 RLUSD/)
+    expect(demoRescheduleRefusal(done, status({ runsLeft: 0 }))).toMatch(/agent runs/)
+    expect(demoRescheduleRefusal(done, status({ paidTodayCents: null }))).toMatch(/could not read/)
   })
 
   it('hides phone numbers from visitors', () => {

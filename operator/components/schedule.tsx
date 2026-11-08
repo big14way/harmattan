@@ -2,10 +2,13 @@
 
 import { money, PAYABLE_STATUS } from '@/lib/format'
 import type { DashboardState } from '@/lib/types'
-import { Avatar, ExternalLink, SectionHeader, Tag } from './ui'
+import { againText, demoAgain } from './dashboard'
+import type { RunControl } from './runs'
+import { Avatar, Button, ExternalLink, Icon, SectionHeader, Tag } from './ui'
 
-export function Schedule({ state }: { state: DashboardState }) {
+export function Schedule({ state, control }: { state: DashboardState; control: RunControl }) {
   const { payables, view } = state
+  const again = demoAgain(state)
   const today = view.today.day
   const shown = payables.slice(0, 10)
   const due = payables.filter((p) => p.status === 'scheduled' && p.dueDate <= today)
@@ -54,6 +57,14 @@ export function Schedule({ state }: { state: DashboardState }) {
           Nothing scheduled. Add payments with <code className="font-mono text-[13px] text-ink">pnpm seed demo</code>.
         </p>
       )}
+      {again ? (
+        <div className="mt-5 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className={`max-w-[640px] text-[14px] leading-5 ${again.refusal ? 'text-warn' : 'text-muted'}`}>{again.refusal ?? againText(state)}</p>
+          <Button className="shrink-0" onClick={() => void control.again()} disabled={control.running || !state.agent || Boolean(again.refusal)}>
+            <Icon name="again" /> {control.running ? 'The agent is working…' : 'Run the demo again'}
+          </Button>
+        </div>
+      ) : null}
     </section>
   )
 }

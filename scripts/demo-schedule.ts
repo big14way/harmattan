@@ -19,11 +19,14 @@ export function scenarioTotalCents(name: string): number {
   return (SCENARIOS[name] ?? []).reduce((s, i) => s + toCents(i.amount), 0)
 }
 
-/** Puts a scenario on today's schedule. A suffix keeps payment ids unique across demo runs. */
-export function seedScenario(name: string, suffix?: string): Payable[] {
+/**
+ * Puts a scenario on today's schedule (the operator's time zone). A suffix keeps payment ids unique
+ * across demo runs.
+ */
+export function seedScenario(name: string, suffix?: string, timezone = loadPolicy().timezone): Payable[] {
   const scenario = SCENARIOS[name]
   if (!scenario) throw new Error(`Unknown scenario "${name}". Try: ${Object.keys(SCENARIOS).join(', ')}`)
-  const { day } = calendarKeys(new Date(), loadPolicy().timezone)
+  const { day } = calendarKeys(new Date(), timezone)
   return scenario.map((s) => {
     const p: Payable = {
       id: [s.key, day, suffix].filter(Boolean).join('-'),

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { money, shortAddress } from '@/lib/format'
-import { demoRunRefusal } from '@/lib/demo-rules'
+import { demoRescheduleRefusal, demoRunRefusal } from '@/lib/demo-rules'
 import type { DashboardState, DemoStatus, RunRecord } from '@/lib/types'
 import { AgentCard } from './agent-card'
 import { Approvals } from './approvals'
@@ -25,6 +25,20 @@ export interface Actions {
   /** False for a public-demo visitor: limits, payees and invites are read-only. */
   operator: boolean
   demo: DemoStatus | null
+}
+
+/**
+ * On a demo deployment, once today's demo is finished (nothing due, nothing waiting for a signature):
+ * the offer to run it again, with the reason it cannot happen now if there is one. Null otherwise.
+ */
+export function demoAgain(state: DashboardState): { refusal: string | null } | null {
+  if (!state.demoSchedule) return null
+  const today = state.view.today.day
+  const dueCount = state.payables.filter((p) => p.status === 'scheduled' && p.dueDate <= today).length
+  const pendingCount = state.approvals.filter((a) => a.status === 'pending').length
+  if (dueCount || pendingCount) return null
+  const demo = state.viewer.operator ? null : state.viewer.demo
+  return { refusal: demoRescheduleRefusal({ dueCount, pendingCount, totalCents: state.demoSchedule.totalCents }, demo) }
 }
 
 /** Why a public-demo visitor cannot start a run right now, or null (always null for the operator). */
@@ -138,6 +152,13 @@ function DemoBanner({ state }: { state: DashboardState }) {
   )
 }
 
+/** What "Run the demo again" does, in one sentence. */
+export function againText(state: DashboardState): string {
+  const s = state.demoSchedule
+  if (!s) return ''
+  return `Today's demo is finished. Run it again to put the same ${s.count} payouts (${money(s.totalCents)}) back on today's schedule and start the agent on them.`
+}
+
 function Stat({ label, value, sub, children }: { label: string; value: string; sub?: React.ReactNode; children?: React.ReactNode }) {
   return (
     <div className="flex min-w-0 flex-col gap-2 px-0 py-5 sm:px-6 sm:first:pl-0">
@@ -152,6 +173,7 @@ function Stat({ label, value, sub, children }: { label: string; value: string; s
 function Overview({ state, control }: { state: DashboardState; control: RunControl }) {
   const { view, approvals, decisions, treasury } = state
   const blocked = visitorRunBlock(state)
+  const again = demoAgain(state)
   const pending = approvals.filter((a) => a.status === 'pending')
   const paidIds = new Set(decisions.filter((d) => d.outcome === 'cosigned').map((d) => d.paymentId))
   const stopped = decisions.filter((d) => d.day === view.today.day && d.outcome === 'refused' && !paidIds.has(d.paymentId))
@@ -179,18 +201,32 @@ function Overview({ state, control }: { state: DashboardState; control: RunContr
         </p>
 
         <div className="mt-8 flex flex-wrap gap-3">
-          <button
-            onClick={() => void control.start()}
-            disabled={control.running || !state.agent || Boolean(blocked)}
-            className="inline-flex items-center gap-2 rounded-[6px] border border-accent bg-accent px-4 py-2.5 text-[14px] font-normal text-accent-ink hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            <Icon name="play" /> {control.running ? 'The agent is working…' : "Run today's payouts"}
-          </button>
+          {again ? (
+            <button
+              onClick={() => void control.again()}
+              disabled={control.running || !state.agent || Boolean(again.refusal)}
+              className="inline-flex items-center gap-2 rounded-[6px] border border-accent bg-accent px-4 py-2.5 text-[14px] font-normal text-accent-ink hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <Icon name="again" /> {control.running ? 'The agent is working…' : 'Run the demo again'}
+            </button>
+          ) : (
+            <button
+              onClick={() => void control.start()}
+              disabled={control.running || !state.agent || Boolean(blocked)}
+              className="inline-flex items-center gap-2 rounded-[6px] border border-accent bg-accent px-4 py-2.5 text-[14px] font-normal text-accent-ink hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <Icon name="play" /> {control.running ? 'The agent is working…' : "Run today's payouts"}
+            </button>
+          )}
           <a href="#runs" className="inline-flex items-center gap-2 rounded-[6px] border border-line bg-surface px-4 py-2.5 text-[14px] font-normal hover:border-line-strong">
             Give the agent an instruction
           </a>
         </div>
-        {blocked ? <p className="mt-3 max-w-[680px] text-[13px] leading-5 text-warn">{blocked}</p> : null}
+        {again ? (
+          <p className={`mt-3 max-w-[680px] text-[13px] leading-5 ${again.refusal ? 'text-warn' : 'text-muted'}`}>{again.refusal ?? againText(state)}</p>
+        ) : blocked ? (
+          <p className="mt-3 max-w-[680px] text-[13px] leading-5 text-warn">{blocked}</p>
+        ) : null}
 
         <div className="mt-10 grid grid-cols-1 divide-y divide-line border-y border-line sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-4 lg:divide-x">
           <Stat
@@ -278,27 +314,42 @@ export function Dashboard() {
   }, [toast])
 
   const [running, setRunning] = useState(false)
+  const start: RunControl['start'] = async (instruction, planner) => {
+    setRunning(true)
+    try {
+      const run = await api<RunRecord>('/api/run', 'POST', { instruction, planner })
+      const paid = run.payments.filter((p) => p.status === 'paid').length
+      const waiting = run.payments.filter((p) => p.approvalId).length
+      const refused = run.payments.length - paid - waiting
+      setToast({
+        tone: 'good',
+        text: run.payments.length
+          ? `Agent run finished: ${paid} paid, ${waiting} waiting for you, ${refused} refused.`
+          : 'Agent run finished without attempting a payment. Its report is under Run the agent.',
+      })
+    } catch (e) {
+      setToast({ tone: 'bad', text: (e as Error).message })
+    } finally {
+      setRunning(false)
+      await load()
+    }
+  }
   const control: RunControl = {
     running,
-    start: async (instruction, planner) => {
+    start,
+    // Puts the demo payouts back on today's schedule, then runs the agent on them.
+    again: async () => {
       setRunning(true)
       try {
-        const run = await api<RunRecord>('/api/run', 'POST', { instruction, planner })
-        const paid = run.payments.filter((p) => p.status === 'paid').length
-        const waiting = run.payments.filter((p) => p.approvalId).length
-        const refused = run.payments.length - paid - waiting
-        setToast({
-          tone: 'good',
-          text: run.payments.length
-            ? `Agent run finished: ${paid} paid, ${waiting} waiting for you, ${refused} refused.`
-            : 'Agent run finished without attempting a payment. Its report is under Run the agent.',
-        })
+        await api('/api/schedule/demo', 'POST')
       } catch (e) {
         setToast({ tone: 'bad', text: (e as Error).message })
-      } finally {
         setRunning(false)
         await load()
+        return
       }
+      await load()
+      await start()
     },
   }
 
@@ -345,7 +396,7 @@ export function Dashboard() {
             <AgentCard state={state} now={now} />
             <Limits state={state} actions={actions} />
             <Payees state={state} actions={actions} />
-            <Schedule state={state} />
+            <Schedule state={state} control={control} />
             <Ledger state={state} now={now} />
           </div>
           <footer className="border-t border-line">

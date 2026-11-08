@@ -34,6 +34,16 @@ export interface DashboardState {
   /** A fresh random address that is not on the payee list, for the injection example. */
   strangerAddress: string
   viewer: Viewer
+  /** The demo payouts this deployment can put back on the schedule (HARMATTAN_DEMO_SCHEDULE), or null. */
+  demoSchedule: DemoSchedule | null
+}
+
+export interface DemoSchedule {
+  name: string
+  /** How many payouts one demo schedules. */
+  count: number
+  /** What one full demo moves from the treasury. */
+  totalCents: number
 }
 
 /** What a public-demo visitor may still do today (HARMATTAN_PUBLIC_DEMO=1). */
