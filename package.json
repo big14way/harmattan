@@ -26,7 +26,7 @@
     "dashboard:build": "pnpm --filter @harmattan/operator build",
     "agent:serve": "tsx agent/src/server.ts",
     "demo:reset": "tsx scripts/demo-reset.ts",
-    "start": "node --import tsx scripts/start-all.ts",
+    "start": "node scripts/start-all.ts",
     "rehearse": "tsx scripts/rehearse.ts"
   },
   "devDependencies": {

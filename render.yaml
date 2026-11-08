@@ -11,6 +11,9 @@ services:
     envVars:
       - key: XRPL_NETWORK
         value: testnet
+      # The free instance's disk is wiped on restart and sleep: put the demo payouts back on wake.
+      - key: HARMATTAN_DEMO_SCHEDULE
+        value: demo
       - key: HARMATTAN_DASHBOARD_PASSWORD
         sync: false
       - key: HARMATTAN_AGENT_SEED

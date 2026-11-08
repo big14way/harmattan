@@ -16,4 +16,4 @@ RUN pnpm --filter @harmattan/operator build
 
 ENV NODE_ENV=production
 EXPOSE 3400
-CMD ["node", "--import", "tsx", "scripts/start-all.ts"]
+CMD ["node", "scripts/start-all.ts"]

@@ -22,7 +22,12 @@ export interface PolicyView {
 
 /** What the agent can do with the limits service: read policy, ask for a co-signature. Nothing else. */
 export class LimitsClient {
-  constructor(private readonly baseUrl = process.env.LIMITS_URL ?? 'http://localhost:8787') {}
+  private readonly baseUrl: string
+
+  // A plain field rather than a parameter property, so Node can run this file without a compiler.
+  constructor(baseUrl = process.env.LIMITS_URL ?? 'http://localhost:8787') {
+    this.baseUrl = baseUrl
+  }
 
   async policy(): Promise<PolicyView> {
     const res = await fetch(`${this.baseUrl}/policy`)
